@@ -9,6 +9,7 @@ So you take orders from a shop, deliver them and then u get MONEY
 THATS RIGHT MONEEEEY, you cant really do anything with it, YET
 the faster ou deliver the MORE money you get
 tho, try not to get bumpbed a lot, tho wont affect the money ou get, no ones wants an upside bottomless cup huh
+
 # Credits
 Me
 Me
