@@ -1,4 +1,3 @@
-<!-- DEAR REVIWER, I HAVE No idea how is this ai?? the one big chunk? thats the point of this game???? one file chalenge, the vaiables? i have always named stuff like that, the weird naming? thats my style, the ui/ HUD, i use external desighnning softwar that uses black magic to make that code. Just trust me on this one, it is NOT AI-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +16,6 @@
 --panel-dark:#070a14;--bezel:#33415f;--bezel-dark:#05070d;
 --text-primary:#e8e8e8;--text-secondary:#a0a4b0;--text-dim:#6a6d78;
 }
-
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#08090c;
 font-family:'VT323',monospace;-webkit-user-select:none;user-select:none;}
@@ -159,11 +157,22 @@ filter:drop-shadow(3px 3px 0 rgba(0,0,0,.75));}
 #driftTag{position:absolute;top:4px;left:0;width:100%;text-align:center;font-family:'Press Start 2P',monospace;font-size:9px;color:var(--red);text-shadow:0 0 8px rgba(255,82,82,0.9),1px 1px 0 #000;opacity:0;transition:opacity 0.15s;}
 #driftTag.show{opacity:1;}
 #driftScorePop{position:absolute;top:15px;left:0;width:100%;text-align:center;font-family:'VT323',monospace;font-size:15px;color:var(--amber);opacity:0;transition:opacity .2s;}
-font-family:'Press Start 2P',monospace;font-size:6px;color:var(--green);letter-spacing:2px;
-text-shadow:0 0 6px rgba(93,255,138,.7),1px 1px 0 #000;z-index:3;}
-#radarSweep{position:absolute;inset:0;border-radius:50%;pointer-events:none;mix-blend-mode:screen;
-background:conic-gradient(from 0deg,rgba(93,255,138,0.3),rgba(93,255,138,0) 40%);animation:sweep 3s linear infinite;}
+#radarWrap{position:absolute;bottom:14px;right:14px;width:224px;height:150px;pointer-events:none;z-index:9;
+background:#050a05;border:3px solid var(--bezel);
+clip-path:polygon(0 8px,8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px));
+filter:drop-shadow(3px 3px 0 rgba(0,0,0,.75));overflow:hidden;}
+#radarLabel{position:absolute;top:4px;left:7px;font-family:'Press Start 2P',monospace;font-size:6px;color:var(--green);letter-spacing:2px;text-shadow:0 0 6px rgba(93,255,138,.7),1px 1px 0 #000;z-index:3;}
+#radarMode{position:absolute;top:4px;right:7px;font-family:'Press Start 2P',monospace;font-size:6px;color:var(--cyan);letter-spacing:1px;text-shadow:1px 1px 0 #000;z-index:3;}
+#minimap{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;}
+#radarSweep{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;
+background:conic-gradient(from 0deg at 50% 50%,rgba(93,255,138,0.14),rgba(93,255,138,0) 34%);animation:sweep 3.4s linear infinite;}
 @keyframes sweep{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+#gpsReadout{position:absolute;bottom:3px;left:0;width:100%;text-align:center;font-family:'Press Start 2P',monospace;font-size:6px;color:var(--cyan);letter-spacing:1px;text-shadow:1px 1px 0 #000;z-index:3;}
+#raceHint{position:absolute;top:170px;left:50%;transform:translateX(-50%);
+font-family:'Press Start 2P',monospace;font-size:9px;color:#111;
+background:var(--green);padding:9px 14px;border:2px solid var(--bezel-dark);box-shadow:3px 3px 0 rgba(0,0,0,.6);
+opacity:0;transition:opacity 0.25s;pointer-events:none;}
+#raceHint.show{opacity:1;}
 #controlsHint{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
 font-size:14px;color:var(--text-secondary);background:#0b0f1d;
 padding:4px 12px;letter-spacing:1px;transition:opacity 1s;pointer-events:none;white-space:nowrap;
@@ -342,6 +351,7 @@ touch-action:none;-webkit-user-select:none;user-select:none;opacity:.88;}
 #clockWidget{padding:5px 8px;}
 #clockTime{font-size:10px;}
 #announceTxt{font-size:16px;}
+#radarWrap{width:160px;height:110px;}
 }
 </style>
 </head>
@@ -408,6 +418,7 @@ touch-action:none;-webkit-user-select:none;user-select:none;opacity:.88;}
 <div id="evadeBarWrap"><div id="evadeBar"></div></div>
 </div>
 <div id="dealerHint" class="pixel-font">PRESS E TO BROWSE CARS</div>
+<div id="raceHint" class="pixel-font">PRESS E TO START CITY RACE</div>
 <div id="nitroWrap">
 <div id="nitroLabel">N₂O — HOLD SHIFT</div>
 <div id="nitroBarWrap"><div id="nitroBar"></div></div>
@@ -418,8 +429,12 @@ touch-action:none;-webkit-user-select:none;user-select:none;opacity:.88;}
 <div id="speedUnit">MPH</div>
 <div id="driftTag">DRIFT!<div id="driftScorePop"></div></div>
 </div>
-<canvas id="minimap" width="150" height="150"></canvas>
+<div id="radarWrap">
+<div id="radarLabel">GPS NAV</div>
+<div id="radarMode">ROT</div>
+<canvas id="minimap" width="224" height="150"></canvas>
 <div id="radarSweep"></div>
+<div id="gpsReadout"></div>
 </div>
 </div>
 <div id="pauseBtn">II</div>
@@ -430,6 +445,7 @@ touch-action:none;-webkit-user-select:none;user-select:none;opacity:.88;}
 <span class="pixel-font" style="font-size:8px;">H</span> HORN ·
 <span class="pixel-font" style="font-size:8px;">G</span> GARAGE ·
 <span class="pixel-font" style="font-size:8px;">R</span> RADIO ·
+<span class="pixel-font" style="font-size:8px;">N</span> GPS ·
 <span class="pixel-font" style="font-size:8px;">P</span> PAUSE
 </div>
 </div>
@@ -504,7 +520,7 @@ touch-action:none;-webkit-user-select:none;user-select:none;opacity:.88;}
 <div class="ss-keys">
 <span class="kbd">W A S D</span> drive &nbsp; <span class="kbd">SPACE</span> handbrake drift<br>
 <span class="kbd">SHIFT</span> nitro &nbsp; <span class="kbd">H</span> horn &nbsp; <span class="kbd">G</span> garage<br>
-<span class="kbd">R</span> radio &nbsp; <span class="kbd">P</span> pause &nbsp; <span class="kbd">M</span> sound
+<span class="kbd">R</span> radio &nbsp; <span class="kbd">N</span> gps mode &nbsp; <span class="kbd">P</span> pause &nbsp; <span class="kbd">M</span> sound
 </div>
 <div id="startBtn">go to work blud </small></div>
 </div>
@@ -527,7 +543,6 @@ touch-action:none;-webkit-user-select:none;user-select:none;opacity:.88;}
 <div class="rec-line"><span>DONUTS SPUN</span><i></i><b id="recDonuts">0</b></div>
 <div class="rec-line"><span>HEATS ESCAPED</span><i></i><b id="recEscapes">0</b></div>
 </div>
-
 </div>
 </div>
 <div class="ss-road">
@@ -565,6 +580,7 @@ var T2_X0=T1_X1+HW_STRETCH;
 var T2_W=6400,T2_H=5000;
 var T2_X1=T2_X0+T2_W;
 var MERGE_Y=2500;
+var MAP_X0=-4300;
 var MAP_W=T2_X1,MAP_H=5000;
 var PALETTE={
 grassA:'#4a7a3f',grassB:'#406e36',grassC:'#558a48',
@@ -588,6 +604,14 @@ var METRO_COLORS=[
 {wall:'#434c5e',roof:'#ebcb8b',trim:'#eceff4'},
 {wall:'#2b2d42',roof:'#ef476f',trim:'#f4f4f9'},
 {wall:'#22223b',roof:'#4cc9f0',trim:'#f2e9e4'}
+];
+var RACE_COLORS=[
+{wall:'#8a4a5a',roof:'#2f1a20',trim:'#f2d9c8'},
+{wall:'#5a6a8a',roof:'#1a2030',trim:'#e8e6d0'},
+{wall:'#8a7a4a',roof:'#3a3018',trim:'#fff4df'},
+{wall:'#6a8a7a',roof:'#20302a',trim:'#eef3f7'},
+{wall:'#7a5a8a',roof:'#281a30',trim:'#e9e2f2'},
+{wall:'#a05a4a',roof:'#40180f',trim:'#f2d9b8'}
 ];
 var NEON_GLOW=['#ffd98a','#9adcff','#ff9fd0','#b8ff9a'];
 var streetGrid=[],gridSeedIdx=0;
@@ -860,6 +884,14 @@ hwx+=140;
 }
 roadBlocks.push({x:T1_X1+70-12,y:MERGE_Y-(LANE_W+20)/2,w:24,h:LANE_W+20});
 buildDistrictGrid({x0:T2_X0,x1:T2_X1,y0:0,y1:T2_H,minGap:340,maxGap:460,mergeY:MERGE_Y,cityId:2,palettes:METRO_COLORS,parkChance:0.08,waterExtra:3,apartments:true,shopName:'Neon Slice Pizza',dealerName:'Retro Motors - Metro Branch'});
+buildDistrictGrid({x0:-4200,x1:0,y0:0,y1:5000,minGap:420,maxGap:560,mergeY:MERGE_Y,cityId:3,palettes:RACE_COLORS,parkChance:0.14,waterExtra:1,apartments:false,shopName:'Apex Pizza',dealerName:'Retro Motors - Raceway'});
+streetGrid.push({type:'h',y:MERGE_Y,x0:-1900,x1:0,seed:gridSeedIdx++,highway:true});
+var whx=-1800;
+while(whx<-100){
+sceneryBits.push({type:'tree',x:whx+rollBetween(-20,20),y:MERGE_Y-LANE_W/2-40+rollBetween(-15,15)});
+sceneryBits.push({type:'tree',x:whx+rollBetween(-20,20),y:MERGE_Y+LANE_W/2+40+rollBetween(-15,15)});
+whx+=150;
+}
 var li=0;
 while(li<streetGrid.length){
 var rd=streetGrid[li];
@@ -908,6 +940,186 @@ hi++;
 vi++;
 }
 })();
+// ===================== GPS ROUTE GRAPH + A* =====================
+var gpsNodes=[],gpsAdj=[],gpsRoute=[],gpsRouteTimer=0;
+(function buildRouteGraph(){
+var vRoads=[],hRoads=[];
+var ri=0;
+while(ri<streetGrid.length){
+if(streetGrid[ri].type==='v')vRoads.push(streetGrid[ri]);else hRoads.push(streetGrid[ri]);
+ri++;
+}
+var nodeMap={};
+function addNode(x,y,av,ah){var id=gpsNodes.length;gpsNodes.push({x:x,y:y,alongV:av,alongH:ah});gpsAdj.push([]);return id;}
+function link(a,b,type,road){gpsAdj[a].push({to:b,type:type,road:road});gpsAdj[b].push({to:a,type:type,road:road});}
+var vi=0;
+while(vi<vRoads.length){
+var v=vRoads[vi];
+var hi=0;
+while(hi<hRoads.length){
+var h=hRoads[hi];
+if(h.y>=v.y0&&h.y<=v.y1&&v.x>=h.x0&&v.x<=h.x1){
+var id=addNode(fetchRoadCenterline(v,h.y),fetchRoadCenterline(h,v.x),h.y,v.x);
+nodeMap[vi+'_'+hi]={id:id,alongV:h.y,alongH:v.x,vi:vi,hi:hi};
+}
+hi++;
+}
+vi++;
+}
+var byV={};
+for(var k1 in nodeMap){var r1=nodeMap[k1];if(!byV[r1.vi])byV[r1.vi]=[];byV[r1.vi].push(r1);}
+for(var vk in byV){
+var av=byV[vk].sort(function(a,b){return a.alongV-b.alongV;});
+var j=0;while(j<av.length-1){link(av[j].id,av[j+1].id,'v',vRoads[vk]);j++;}
+}
+var byH={};
+for(var k2 in nodeMap){var r2=nodeMap[k2];if(!byH[r2.hi])byH[r2.hi]=[];byH[r2.hi].push(r2);}
+for(var hk in byH){
+var ah=byH[hk].sort(function(a,b){return a.alongH-b.alongH;});
+var j2=0;while(j2<ah.length-1){link(ah[j2].id,ah[j2+1].id,'h',hRoads[hk]);j2++;}
+}
+})();
+function nearestGpsNode(px,py){
+var best=-1,bd=Infinity,i=0;
+while(i<gpsNodes.length){
+var dx=gpsNodes[i].x-px,dy=gpsNodes[i].y-py,d=dx*dx+dy*dy;
+if(d<bd){bd=d;best=i;}
+i++;
+}
+return best;
+}
+function densifyGpsSegment(pts,A,B,edge){
+var na=gpsNodes[A],nb=gpsNodes[B];
+if(!edge){pts.push({x:nb.x,y:nb.y});return;}
+var road=edge.road;
+var span=edge.type==='v'?Math.abs(nb.alongV-na.alongV):Math.abs(nb.alongH-na.alongH);
+var steps=Math.max(2,Math.round(span/26));
+var s=1;
+if(edge.type==='v'){
+var a0=na.alongV,a1=nb.alongV;
+while(s<=steps){var yy=a0+(a1-a0)*s/steps;pts.push({x:fetchRoadCenterline(road,yy),y:yy});s++;}
+}else{
+var x0=na.alongH,x1=nb.alongH;
+while(s<=steps){var xx=x0+(x1-x0)*s/steps;pts.push({x:xx,y:fetchRoadCenterline(road,xx)});s++;}
+}
+}
+function findGpsRoute(ax,ay,bx,by){
+if(gpsNodes.length===0)return [{x:ax,y:ay},{x:bx,y:by}];
+var start=nearestGpsNode(ax,ay),goal=nearestGpsNode(bx,by);
+if(start<0||goal<0)return [{x:ax,y:ay},{x:bx,y:by}];
+if(start===goal)return [{x:ax,y:ay},{x:bx,y:by}];
+var n=gpsNodes.length;
+var gScore=[],came=[],closed=[];
+var i=0;while(i<n){gScore[i]=Infinity;came[i]=-1;closed[i]=false;i++;}
+gScore[start]=0;
+var open=[start];
+function heur(idx){var dx=gpsNodes[idx].x-bx,dy=gpsNodes[idx].y-by;return Math.sqrt(dx*dx+dy*dy);}
+var guard=0;
+while(open.length&&guard<6000){
+guard++;
+var bi=0,bf=Infinity,oi=0;
+while(oi<open.length){var f=gScore[open[oi]]+heur(open[oi]);if(f<bf){bf=f;bi=oi;}oi++;}
+var cur=open.splice(bi,1)[0];
+if(cur===goal)break;
+if(closed[cur])continue;
+closed[cur]=true;
+var edges=gpsAdj[cur],ei=0;
+while(ei<edges.length){
+var e=edges[ei],nb=e.to;
+if(!closed[nb]){
+var w=Math.hypot(gpsNodes[nb].x-gpsNodes[cur].x,gpsNodes[nb].y-gpsNodes[cur].y);
+var tg=gScore[cur]+w;
+if(tg<gScore[nb]){
+gScore[nb]=tg;came[nb]=cur;
+if(open.indexOf(nb)===-1)open.push(nb);
+}
+}
+ei++;
+}
+}
+if(came[goal]===-1)return [{x:ax,y:ay},{x:bx,y:by}];
+var path=[],c=goal;
+while(c!==-1){path.push(c);c=came[c];}
+path.reverse();
+var pts=[{x:ax,y:ay}];
+var pi2=0;
+while(pi2<path.length-1){
+var A=path[pi2],B=path[pi2+1],edge=null,e2=0;
+while(e2<gpsAdj[A].length){if(gpsAdj[A][e2].to===B){edge=gpsAdj[A][e2];break;}e2++;}
+densifyGpsSegment(pts,A,B,edge);
+pi2++;
+}
+pts.push({x:bx,y:by});
+return pts;
+}
+// ===================== CITY RACE =====================
+var raceActive=false,raceData=null;
+var raceStart={x:-2100,y:2600};
+var RACER_SPEC={id:99,name:'Rival',L:28,W:14,body:'#e03030',body2:'#1a1a1a',stripe:'#ffd23f'};
+function startRace(){
+var cands=[];var hi=0;
+while(hi<homeList.length){var h=homeList[hi];if(h.city===3&&h.deliverable)cands.push(h);hi++;}
+if(!cands.length){pushToast('No race targets found!','warn');return;}
+var best=null,i=0;
+while(i<cands.length){
+var d=spanBetween(raceStart.x,raceStart.y,cands[i].x,cands[i].y);
+if(d>1300&&(!best||d>best.d))best={h:cands[i],d:d};
+i++;
+}
+if(!best)best={h:grabOne(cands),d:0};
+raceData={house:best.h,ai:{x:raceStart.x+46,y:raceStart.y+46,route:null,ri:0,rt:0,angle:0}};
+raceActive=true;
+gpsRouteTimer=0;
+showAnnouncement('CITY RACE!','Beat the rival to House #'+(100+best.h.id),'#4ad1ff');
+playRankJingle();
+}
+function tickRace(dt){
+if(!raceActive||!raceData)return;
+var ai=raceData.ai;
+var hx=raceData.house.x+raceData.house.w/2;
+var hy=raceData.house.y+raceData.house.h/2;
+ai.rt-=dt;
+if(ai.rt<=0||!ai.route||ai.route.length===0){
+ai.rt=0.5;
+ai.route=findGpsRoute(ai.x,ai.y,hx,hy);
+ai.ri=1;
+}
+var pD=spanBetween(playerCar.x,playerCar.y,hx,hy);
+var aD=spanBetween(ai.x,ai.y,hx,hy);
+var spd=300;
+if(aD>pD+250)spd=352;
+else if(aD<pD-250)spd=262;
+var guard=0;
+while(ai.route&&ai.ri<ai.route.length&&guard<60){
+guard++;
+var wp=ai.route[ai.ri];
+var dx=wp.x-ai.x,dy=wp.y-ai.y;
+var d=Math.hypot(dx,dy);
+var step=spd*dt;
+if(d<=step){ai.x=wp.x;ai.y=wp.y;ai.ri++;}
+else{ai.x+=dx/d*step;ai.y+=dy/d*step;ai.angle=Math.atan2(dy,dx);break;}
+}
+if(aD<70){endRace(false);return;}
+if(pD<Math.max(raceData.house.w,raceData.house.h)*0.9+30){endRace(true);return;}
+}
+function endRace(won){
+raceActive=false;
+if(won){
+creditWallet(400);
+grantExp(30);
+unlockBadge('racer');
+showAnnouncement('RACE WON!','+$400 · the AE86 awaits at the Raceway dealer','#5dff8a');
+playDeliverJingle();
+}else{
+creditWallet(60);
+showAnnouncement('RACE LOST','The rival got there first · +$60','#ff5252');
+playLateSound();
+}
+pulseMoneyWidget();
+persistProfile();
+raceData=null;
+gpsRouteTimer=0;
+}
 function randomRoadPointAbs(){
 var rd=grabOne(streetGrid);
 if(rd.type==='v'){
@@ -933,7 +1145,9 @@ var roadsideSigns=[
 {x:5120,y:MERGE_Y-150,txt:'HOT SLICES AHEAD',sub:"PIXEL PETE'S"},
 {x:5700,y:MERGE_Y+150,txt:'METRO CITY ►',sub:'NEXT 2 KM'},
 {x:6250,y:MERGE_Y-150,txt:'DRIFT RESPONSIBLY',sub:'MPD PSA'},
-{x:6650,y:MERGE_Y+150,txt:'NEON SLICE',sub:'OPEN ALL NIGHT'}
+{x:6650,y:MERGE_Y+150,txt:'NEON SLICE',sub:'OPEN ALL NIGHT'},
+{x:-1000,y:MERGE_Y-150,txt:'RACEWAY ◄',sub:'CITY RACES'},
+{x:-3000,y:MERGE_Y+150,txt:'AE86 LIVES',sub:'TOFU DRIFT'}
 ];
 var VEHICLE_CATALOG=[
 {id:0,name:'Rustbucket',price:0,mult:1.0,maxSpeed:250,accel:150,grip:9.5,turnRate:2.9,L:26,W:13,body:'#8a6a4f',body2:'#1a1a1a',stripe:'#5a4632',city:1,desc:'Beat up but reliable. Everyone starts somewhere.'},
@@ -947,7 +1161,8 @@ var VEHICLE_CATALOG=[
 {id:8,name:'Chrome Beast',price:19000,mult:5.8,maxSpeed:470,accel:280,grip:6.0,turnRate:2.8,L:31,W:15,body:'#c8c8d0',body2:'#1a1a1a',stripe:'#222',city:2,desc:'Heavy, loud, and always sideways.'},
 {id:9,name:'Voltage GT',price:27000,mult:6.8,maxSpeed:490,accel:290,grip:9.8,turnRate:3.6,L:28,W:14,body:'#37f5e0',body2:'#1a1a1a',stripe:'#111',city:2,desc:'Electric sharpness. Corners like it is on rails.'},
 {id:10,name:'Phantom Drift',price:38000,mult:8.0,maxSpeed:510,accel:300,grip:5.0,turnRate:3.1,L:29,W:14,body:'#232336',body2:'#1a1a1a',stripe:'#ff5252',city:2,desc:'Barely any grip at all. Pure drift machine.'},
-{id:11,name:'Quantum Hyper',price:55000,mult:10.0,maxSpeed:540,accel:320,grip:9.0,turnRate:3.4,L:30,W:14,body:'#ffd23f',body2:'#1a1a1a',stripe:'#111',city:2,desc:'The ultimate courier car. Nothing beats it.'}
+{id:11,name:'Quantum Hyper',price:55000,mult:10.0,maxSpeed:540,accel:320,grip:9.0,turnRate:3.4,L:30,W:14,body:'#ffd23f',body2:'#1a1a1a',stripe:'#111',city:2,desc:'The ultimate courier car. Nothing beats it.'},
+{id:12,name:'Tofu Trueno AE86',price:9000,mult:4.5,maxSpeed:420,accel:265,grip:6.0,turnRate:3.5,L:27,W:13,body:'#f2f2f2',body2:'#1a1a1a',stripe:'#1a1a1a',city:3,desc:'The legendary panda-trim pass monster. Initial D approved. Headlight trick included.'}
 ];
 var CARGO_TYPES={
 pizza:{label:'PIZZA',color:'#ffb833',payMult:1,timeMult:1,fragile:0},
@@ -969,10 +1184,11 @@ var oilSlicks=[],trafficCones=[],glowWorms=[];
 var oilSpawnCd=6,coneSpawnCd=5;
 var shadowDX=6,shadowDY=5,shadowAlpha=0.25;
 var shiftLog={money:0,deliveries:0,drift:0,donuts:0,cones:0};
-var metroGreeted=false;
+var metroGreeted=false,racewayGreeted=false;
 var lastShownTopSpeed=70;
 var chopper={x:0,y:0,chop:0};
 var hotAirBalloons=[],balloonSpawnCd=rollBetween(18,36);
+var radarNorthUp=false;
 var RANK_TITLES=['ROOKIE','PEDAL PUSHER','STREET RUNNER','COURIER PRO','DRIFT ACE','NIGHT HAWK','METRO LEGEND','GHOST OF THE HWY'];
 function expToNext(lv){return Math.round(90*Math.pow(lv,1.3));}
 var BADGE_LIST=[
@@ -993,7 +1209,9 @@ var BADGE_LIST=[
 {id:'air10',name:'FREQUENT FLYER',desc:'Catch air 10 times'},
 {id:'cone25',name:'CONE COLLECTOR',desc:'Knock over 25 cones'},
 {id:'survivor',name:'SURVIVOR',desc:'Deliver with engine under 10%'},
-{id:'combo15',name:'STYLE GOD',desc:'Reach a ×15 combo'}
+{id:'combo15',name:'STYLE GOD',desc:'Reach a ×15 combo'},
+{id:'racer',name:'HEADLIGHT TRICK',desc:'Win a city race'},
+{id:'raceway',name:'RACEWAY RUNNER',desc:'Reach the Raceway district'}
 ];
 var earnedBadges=[];
 var SHIFT_GOAL_POOL=[
@@ -1226,6 +1444,7 @@ if(ev.code==='KeyG')toggleGarageDoor();
 if(ev.code==='KeyM')flipSoundMute();
 if(ev.code==='KeyR')rotateRadioDial();
 if(ev.code==='KeyH')honkHorn();
+if(ev.code==='KeyN'){radarNorthUp=!radarNorthUp;playClickSound();}
 if(ev.code==='KeyP'&&gameRunning)togglePauseScreen();
 if(ev.code==='Escape'){
 if(garageShowing)shutGarage();
@@ -1549,7 +1768,7 @@ playerCar.vy*=0.8;
 }
 bi++;
 }
-playerCar.x=pinValue(playerCar.x,20,MAP_W-20);
+playerCar.x=pinValue(playerCar.x,MAP_X0+20,MAP_W-20);
 playerCar.y=pinValue(playerCar.y,20,MAP_H-20);
 }
 function reactToCollision(cx,cy,impact){
@@ -1834,7 +2053,7 @@ if(starCount>=3)pushToast('Police chopper inbound!','warn');
 }
 function dispatchPatrolUnit(){
 var spawnAng=rollBetween(0,FULL_CIRCLE);
-var spawnX=pinValue(playerCar.x+Math.cos(spawnAng)*520,40,MAP_W-40);
+var spawnX=pinValue(playerCar.x+Math.cos(spawnAng)*520,MAP_X0+40,MAP_W-40);
 var spawnY=pinValue(playerCar.y+Math.sin(spawnAng)*520,40,MAP_H-40);
 patrolUnits.push({x:spawnX,y:spawnY,angle:spawnAng+Math.PI,speed:0,flash:Math.random()*2,stun:0});
 }
@@ -1950,6 +2169,8 @@ heatMeter=0;
 patrolUnits=[];
 bustTimer=0;
 escapeTimer=0;
+raceActive=false;
+raceData=null;
 showAnnouncement('BUSTED!','Fined $'+fine+' by the MPD','#ff5252');
 redFlashVal=1;
 cameraShake=6;
@@ -2497,6 +2718,10 @@ dri++;
 }
 }
 function fetchCurrentTarget(){
+if(raceActive&&raceData){
+var rh=raceData.house;
+return {x:rh.x+rh.w/2,y:rh.y+rh.h/2};
+}
 if(playerProfile.order){
 var house=playerProfile.order.house;
 return {x:house.x+house.w/2,y:house.y+house.h/2};
@@ -2514,6 +2739,7 @@ return null;
 }
 var lastInteractAt=0;
 var dealerHintEl=document.getElementById('dealerHint');
+var raceHintEl=document.getElementById('raceHint');
 function rollOrderFlavor(){
 var pool=[['pizza',10],['burger',6]];
 if(courierLevel>=2)pool.push(['sushi',5]);
@@ -2632,6 +2858,7 @@ runDriftPts=0;
 runCloseCalls=0;
 persistProfile();
 pulseMoneyWidget();
+gpsRouteTimer=0;
 }
 function scanInteractionZones(){
 var nowMs=performance.now();
@@ -2669,6 +2896,14 @@ dealerHintEl.classList.toggle('show',nearDealer&&!garageShowing);
 if(nearDealer&&heldKeys['KeyE']&&nowMs-lastInteractAt>400){
 openGarageDoor();
 lastInteractAt=nowMs;
+}
+var raceGap=spanBetween(playerCar.x,playerCar.y,raceStart.x,raceStart.y);
+var nearRace=(raceGap<90&&!raceActive);
+raceHintEl.classList.toggle('show',nearRace&&!garageShowing);
+if(nearRace&&heldKeys['KeyE']&&nowMs-lastInteractAt>1000){
+lastInteractAt=nowMs;
+if(playerProfile.order){pushToast('Finish your delivery first!','warn');}
+else startRace();
 }
 }
 var receiptEl=document.getElementById('receipt');
@@ -3293,6 +3528,144 @@ dli++;
 mainCtx.restore();
 }
 }
+function strokeRoutePath(){
+mainCtx.beginPath();
+var started=false;
+for(var i=0;i<gpsRoute.length;i++){
+var p=gpsRoute[i];
+if(!inViewFrame(p.x,p.y,90)){started=false;continue;}
+var sx=worldToScreenX(p.x),sy=worldToScreenY(p.y);
+if(!started){mainCtx.moveTo(sx,sy);started=true;}else mainCtx.lineTo(sx,sy);
+}
+}
+function paintGpsRoute(){
+if(gpsRoute.length<2)return;
+mainCtx.save();
+mainCtx.lineCap='round';
+mainCtx.lineJoin='round';
+mainCtx.strokeStyle='rgba(50,140,255,0.16)';
+mainCtx.lineWidth=28;
+strokeRoutePath();mainCtx.stroke();
+mainCtx.strokeStyle='rgba(70,170,255,0.34)';
+mainCtx.lineWidth=12;
+strokeRoutePath();mainCtx.stroke();
+mainCtx.strokeStyle='rgba(150,215,255,0.9)';
+mainCtx.lineWidth=4;
+mainCtx.setLineDash([14,12]);
+mainCtx.lineDashOffset=-((performance.now()/22)%26);
+strokeRoutePath();mainCtx.stroke();
+mainCtx.setLineDash([]);
+mainCtx.restore();
+paintRouteChevrons();
+}
+function paintRouteChevrons(){
+var spacing=52;
+var off=(performance.now()/18)%spacing;
+var acc=0;
+var next=off;
+var drawn=0;
+mainCtx.fillStyle='rgba(190,230,255,0.95)';
+var i=0;
+while(i<gpsRoute.length-1&&drawn<60){
+var a=gpsRoute[i],b=gpsRoute[i+1];
+var segLen=spanBetween(a.x,a.y,b.x,b.y);
+if(segLen<0.001){i++;continue;}
+var ang=Math.atan2(b.y-a.y,b.x-a.x);
+while(next<=acc+segLen&&drawn<60){
+var t=(next-acc)/segLen;
+var px=a.x+(b.x-a.x)*t;
+var py=a.y+(b.y-a.y)*t;
+if(inViewFrame(px,py,40)){
+var sx=worldToScreenX(px),sy=worldToScreenY(py);
+mainCtx.save();
+mainCtx.translate(sx,sy);
+mainCtx.rotate(ang);
+mainCtx.beginPath();
+mainCtx.moveTo(7,0);
+mainCtx.lineTo(-5,-6);
+mainCtx.lineTo(-2,0);
+mainCtx.lineTo(-5,6);
+mainCtx.closePath();
+mainCtx.fill();
+mainCtx.restore();
+drawn++;
+}
+next+=spacing;
+}
+acc+=segLen;
+i++;
+}
+}
+function paintDestinationBeacon(){
+var target=fetchCurrentTarget();
+if(!target)return;
+if(!inViewFrame(target.x,target.y,240))return;
+var sx=worldToScreenX(target.x),sy=worldToScreenY(target.y);
+var beaconCol='255,184,51';
+if(raceActive)beaconCol='74,209,255';
+else if(playerProfile.order){
+if(playerProfile.order.golden)beaconCol='255,210,63';
+else beaconCol='255,82,82';
+}
+var grad=mainCtx.createLinearGradient(sx,sy,sx,sy-100);
+grad.addColorStop(0,'rgba('+beaconCol+',0.35)');
+grad.addColorStop(1,'rgba('+beaconCol+',0)');
+mainCtx.fillStyle=grad;
+mainCtx.fillRect(sx-4,sy-100,8,100);
+var pulse=(performance.now()/500)%1;
+mainCtx.strokeStyle='rgba('+beaconCol+','+(0.5*(1-pulse))+')';
+mainCtx.lineWidth=2;
+mainCtx.beginPath();
+mainCtx.arc(sx,sy,22+pulse*46,0,FULL_CIRCLE);
+mainCtx.stroke();
+}
+function paintRaceStart(){
+var sx=worldToScreenX(raceStart.x),sy=worldToScreenY(raceStart.y);
+var c=0;
+while(c<16){
+var rx=c%4,ry=Math.floor(c/4);
+mainCtx.fillStyle=((rx+ry)%2===0)?'#e8e8e8':'#111';
+mainCtx.fillRect(sx-24+rx*12,sy-24+ry*12,12,12);
+c++;
+}
+mainCtx.strokeStyle='#000';
+mainCtx.lineWidth=2;
+mainCtx.strokeRect(sx-24,sy-24,48,48);
+mainCtx.fillStyle='#333';
+mainCtx.fillRect(sx-2,sy-48,4,26);
+var wave=Math.sin(performance.now()/200)*2;
+mainCtx.fillStyle='#e8e8e8';
+mainCtx.beginPath();
+mainCtx.moveTo(sx+2,sy-48);
+mainCtx.lineTo(sx+28,sy-42+wave);
+mainCtx.lineTo(sx+2,sy-36);
+mainCtx.closePath();
+mainCtx.fill();
+if(!raceActive){
+var pulse=0.5+0.5*Math.sin(performance.now()/260);
+mainCtx.fillStyle='rgba(93,255,138,'+(0.10+pulse*0.14)+')';
+mainCtx.beginPath();
+mainCtx.arc(sx,sy,44+pulse*10,0,FULL_CIRCLE);
+mainCtx.fill();
+}
+}
+function paintRivalCar(){
+if(!raceData)return;
+var ai=raceData.ai;
+mainCtx.save();
+mainCtx.translate(worldToScreenX(ai.x),worldToScreenY(ai.y));
+mainCtx.rotate(ai.angle+Math.PI/2);
+paintCarSprite(mainCtx,RACER_SPEC,0.12);
+mainCtx.restore();
+var sx=worldToScreenX(ai.x),sy=worldToScreenY(ai.y);
+mainCtx.save();
+mainCtx.globalCompositeOperation='lighter';
+mainCtx.fillStyle='rgba(255,120,60,0.18)';
+mainCtx.beginPath();
+mainCtx.arc(sx,sy,20,0,FULL_CIRCLE);
+mainCtx.fill();
+mainCtx.restore();
+}
 function paintStuntProps(){
 var nowMs=performance.now();
 var rampIdx=0;
@@ -3658,19 +4031,20 @@ mainCtx.font='5px monospace';
 mainCtx.textAlign='center';
 mainCtx.fillText(String(100+b.id),doorX+doorW/2,sy+h-doorH-3.5);
 }
-if(playerProfile.order&&playerProfile.order.house===b){
+var isRaceTarget=(raceActive&&raceData&&raceData.house===b);
+if((playerProfile.order&&playerProfile.order.house===b)||isRaceTarget){
 var bob=Math.sin(performance.now()/220)*4;
 var houseCX=sx+w/2;
 var topY=sy-h*0.28-18+bob;
 var ringCol;
-if(playerProfile.order.golden)ringCol='rgba(255,210,63,0.25)';
+if(isRaceTarget)ringCol='rgba(74,209,255,0.25)';
+else if(playerProfile.order.golden)ringCol='rgba(255,210,63,0.25)';
 else ringCol='rgba(255,82,82,0.22)';
 mainCtx.fillStyle=ringCol;
 mainCtx.beginPath();
 mainCtx.arc(houseCX,sy+h/2,Math.max(w,h)*0.65,0,FULL_CIRCLE);
 mainCtx.fill();
-var arrowCol='#ff5252';
-if(playerProfile.order.golden)arrowCol='#ffd23f';
+var arrowCol=isRaceTarget?'#4ad1ff':(playerProfile.order.golden?'#ffd23f':'#ff5252');
 mainCtx.fillStyle=arrowCol;
 mainCtx.beginPath();
 mainCtx.moveTo(houseCX,topY+10);
@@ -3989,6 +4363,11 @@ ctx.fillStyle=spec.stripe;
 ctx.fillRect(-halfW+2,-halfL*0.1,2,L*0.4);
 ctx.fillRect(halfW-4,-halfL*0.1,2,L*0.4);
 }
+if(spec.id===12){
+ctx.fillStyle='#1a1a1a';
+ctx.fillRect(-halfW+1,-halfL+4,W-2,4);
+ctx.fillRect(-halfW+1,halfL-8,W-2,4);
+}
 }
 function paintPlayerCar(){
 var airProg=0;
@@ -4149,7 +4528,8 @@ mainCtx.save();
 mainCtx.translate(ax,ay);
 mainCtx.rotate(ang+Math.PI/2);
 var arrowCol='#ffb833';
-if(playerProfile.order){
+if(raceActive)arrowCol='#4ad1ff';
+else if(playerProfile.order){
 if(playerProfile.order.golden)arrowCol='#ffd23f';
 else arrowCol='#ff5252';
 }
@@ -4253,6 +4633,7 @@ mainCtx.clearRect(0,0,VIEW_W,VIEW_H);
 applyCameraRotation(mainCtx);
 paintTerrain();
 paintRoadNetwork();
+paintGpsRoute();
 var ski=0;
 while(ski<skidTrails.length){
 var sk=skidTrails[ski];
@@ -4298,6 +4679,9 @@ if(inViewFrame(lamp.x,lamp.y,60)){
 drawQueue.push({y:lamp.y,draw:(function(l){return function(){paintStreetLamp(l);};})(lamp)});
 }
 lpi++;
+}
+if(inViewFrame(raceStart.x,raceStart.y,80)){
+drawQueue.push({y:raceStart.y,draw:paintRaceStart});
 }
 var bi=0;
 while(bi<allBuildings.length){
@@ -4359,6 +4743,9 @@ if(inViewFrame(cop.x,cop.y,60)){
 drawQueue.push({y:cop.y,draw:(function(c){return function(){paintPatrolCar(c);};})(cop)});
 }
 cpi++;
+}
+if(raceActive&&raceData&&inViewFrame(raceData.ai.x,raceData.ai.y,60)){
+drawQueue.push({y:raceData.ai.y,draw:paintRivalCar});
 }
 drawQueue.push({y:playerCar.y,draw:paintPlayerCar});
 drawQueue.sort(function(a,b){return a.y-b.y;});
@@ -4429,6 +4816,7 @@ fti++;
 }
 paintGlowWorms();
 paintBirds();
+paintDestinationBeacon();
 paintNavArrow();
 paintChopper();
 paintBalloons();
@@ -4584,209 +4972,120 @@ mainCtx.stroke();
 }
 }
 var minimapCanvas=document.getElementById('minimap');
-var RADAR_SIZE=150;
+var radarCtx=minimapCanvas.getContext('2d');
+var RADAR_W=224,RADAR_H=150;
 function paintRadar(){
-var w=RADAR_SIZE,h=RADAR_SIZE;
+var w=RADAR_W,h=RADAR_H;
+radarCtx.setTransform(1,0,0,1,0,0);
 radarCtx.clearRect(0,0,w,h);
 radarCtx.fillStyle='#050a05';
 radarCtx.fillRect(0,0,w,h);
 radarCtx.strokeStyle='rgba(0,255,100,0.05)';
 radarCtx.lineWidth=1;
-var gi=0;
-while(gi<w){
-radarCtx.beginPath();radarCtx.moveTo(gi,0);radarCtx.lineTo(gi,h);radarCtx.stroke();
-radarCtx.beginPath();radarCtx.moveTo(0,gi);radarCtx.lineTo(w,gi);radarCtx.stroke();
-gi+=15;
-}
-var scanRadius=750;
-var scaleFactor=(w/2)/scanRadius;
+var gx=0;while(gx<w){radarCtx.beginPath();radarCtx.moveTo(gx,0);radarCtx.lineTo(gx,h);radarCtx.stroke();gx+=16;}
+var gy=0;while(gy<h){radarCtx.beginPath();radarCtx.moveTo(0,gy);radarCtx.lineTo(w,gy);radarCtx.stroke();gy+=16;}
+var viewRange=720;
+var scaleFactor=(h*0.5)/viewRange;
+var visR=(Math.sqrt(w*w+h*h)*0.5)/scaleFactor;
+var rotAngle=radarNorthUp?0:(-playerCar.angle-Math.PI/2);
 radarCtx.save();
 radarCtx.translate(w/2,h/2);
-radarCtx.rotate(-playerCar.angle-Math.PI/2);
+radarCtx.rotate(rotAngle);
 radarCtx.scale(scaleFactor,scaleFactor);
 radarCtx.translate(-playerCar.x,-playerCar.y);
-var wi=0;
-while(wi<lakeZones.length){
-var lake=lakeZones[wi];
-if(!lake.poly){wi++;continue;}
-var minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
-var ppi=0;
-while(ppi<lake.poly.length){
-var pt=lake.poly[ppi];
-if(pt.x<minX)minX=pt.x;
-if(pt.x>maxX)maxX=pt.x;
-if(pt.y<minY)minY=pt.y;
-if(pt.y>maxY)maxY=pt.y;
-ppi++;
-}
-if(maxX<playerCar.x-scanRadius||minX>playerCar.x+scanRadius||maxY<playerCar.y-scanRadius||minY>playerCar.y+scanRadius){wi++;continue;}
-radarCtx.beginPath();
-radarCtx.moveTo(lake.poly[0].x,lake.poly[0].y);
-ppi=1;
-while(ppi<lake.poly.length){radarCtx.lineTo(lake.poly[ppi].x,lake.poly[ppi].y);ppi++;}
-radarCtx.closePath();
-radarCtx.fillStyle='rgba(10,50,40,0.5)';
-radarCtx.fill();
-wi++;
-}
 radarCtx.lineCap='round';
 var ri=0;
 while(ri<streetGrid.length){
 var rd=streetGrid[ri];
 if(rd.type==='v'){
-if(Math.abs(rd.x-playerCar.x)>scanRadius*1.5){ri++;continue;}
-var yA=Math.max(rd.y0,playerCar.y-scanRadius*1.5);
-var yB=Math.min(rd.y1,playerCar.y+scanRadius*1.5);
+if(Math.abs(rd.x-playerCar.x)>visR*1.4){ri++;continue;}
+var yA=Math.max(rd.y0,playerCar.y-visR*1.4),yB=Math.min(rd.y1,playerCar.y+visR*1.4);
 if(yA<yB){
-radarCtx.strokeStyle='rgba(0,255,100,0.22)';
-radarCtx.lineWidth=14;
+radarCtx.strokeStyle=rd.highway?'rgba(74,209,255,0.30)':'rgba(0,255,100,0.20)';
+radarCtx.lineWidth=rd.highway?20:14;
 radarCtx.beginPath();
-radarCtx.moveTo(rd.x,yA);
-radarCtx.lineTo(rd.x,yB);
+radarCtx.moveTo(fetchRoadCenterline(rd,yA),yA);
+radarCtx.lineTo(fetchRoadCenterline(rd,yB),yB);
 radarCtx.stroke();
 }
 }else{
-if(Math.abs(rd.y-playerCar.y)>scanRadius*1.5){ri++;continue;}
-var xA=Math.max(rd.x0,playerCar.x-scanRadius*1.5);
-var xB=Math.min(rd.x1,playerCar.x+scanRadius*1.5);
+if(Math.abs(rd.y-playerCar.y)>visR*1.4){ri++;continue;}
+var xA=Math.max(rd.x0,playerCar.x-visR*1.4),xB=Math.min(rd.x1,playerCar.x+visR*1.4);
 if(xA<xB){
-radarCtx.strokeStyle='rgba(0,255,100,0.22)';
-radarCtx.lineWidth=14;
+radarCtx.strokeStyle=rd.highway?'rgba(74,209,255,0.30)':'rgba(0,255,100,0.20)';
+radarCtx.lineWidth=rd.highway?20:14;
 radarCtx.beginPath();
-radarCtx.moveTo(xA,rd.y);
-radarCtx.lineTo(xB,rd.y);
+radarCtx.moveTo(xA,fetchRoadCenterline(rd,xA));
+radarCtx.lineTo(xB,fetchRoadCenterline(rd,xB));
 radarCtx.stroke();
 }
 }
 ri++;
 }
-var target=fetchCurrentTarget();
-if(target){
-var tdx=target.x-playerCar.x;
-var tdy=target.y-playerCar.y;
-var tDist=Math.hypot(tdx,tdy);
-if(tDist<1)tDist=1;
-var reach=Math.min(tDist,scanRadius);
-radarCtx.setLineDash([46,34]);
-var routeCol='rgba(255,184,51,0.45)';
-if(playerProfile.order){
-if(playerProfile.order.golden)routeCol='rgba(255,210,63,0.55)';
-else routeCol='rgba(255,82,82,0.5)';
-}
-radarCtx.strokeStyle=routeCol;
-radarCtx.lineWidth=8;
+if(gpsRoute.length>1){
+radarCtx.strokeStyle='rgba(80,170,255,0.95)';
+radarCtx.lineWidth=10;
 radarCtx.beginPath();
-radarCtx.moveTo(playerCar.x,playerCar.y);
-radarCtx.lineTo(playerCar.x+tdx/tDist*reach,playerCar.y+tdy/tDist*reach);
+radarCtx.moveTo(gpsRoute[0].x,gpsRoute[0].y);
+var gp=1;while(gp<gpsRoute.length){radarCtx.lineTo(gpsRoute[gp].x,gpsRoute[gp].y);gp++;}
 radarCtx.stroke();
-radarCtx.setLineDash([]);
 }
-var tvi=0;
-while(tvi<civilianCars.length){
-var tv=civilianCars[tvi];
-if(Math.abs(tv.x-playerCar.x)<=scanRadius&&Math.abs(tv.y-playerCar.y)<=scanRadius){
-radarCtx.fillStyle='rgba(160,200,170,0.7)';
-radarCtx.beginPath();
-radarCtx.arc(tv.x,tv.y,14,0,FULL_CIRCLE);
-radarCtx.fill();
-}
-tvi++;
-}
-var pui=0;
-while(pui<roadPickups.length){
-var pk=roadPickups[pui];
-if(Math.abs(pk.x-playerCar.x)<=scanRadius&&Math.abs(pk.y-playerCar.y)<=scanRadius){
-var dotCol='rgba(93,255,138,0.9)';
-if(pk.type==='coin')dotCol='rgba(255,210,63,0.9)';
-else if(pk.type==='nitro')dotCol='rgba(74,209,255,0.9)';
-else if(pk.type==='magnet')dotCol='rgba(154,232,255,0.9)';
-else if(pk.type==='shield')dotCol='rgba(140,255,180,0.9)';
-radarCtx.fillStyle=dotCol;
-radarCtx.beginPath();
-radarCtx.arc(pk.x,pk.y,10,0,FULL_CIRCLE);
-radarCtx.fill();
-}
-pui++;
-}
-var cpi=0;
-while(cpi<patrolUnits.length){
-var cop=patrolUnits[cpi];
-if(Math.abs(cop.x-playerCar.x)<scanRadius&&Math.abs(cop.y-playerCar.y)<scanRadius){
-var blinkOn=Math.floor(performance.now()/200)%2;
-if(blinkOn)radarCtx.fillStyle='#ff5252';
-else radarCtx.fillStyle='#4a7bff';
-radarCtx.fillRect(cop.x-14,cop.y-14,28,28);
-}
-cpi++;
-}
-var ssi=0;
-while(ssi<pizzaShops.length){
-var shop=pizzaShops[ssi];
-radarCtx.fillStyle='#ffb833';
-radarCtx.shadowColor='#ffb833';
-radarCtx.shadowBlur=10;
-radarCtx.beginPath();
-radarCtx.arc(shop.x+shop.w/2,shop.y+shop.h/2,25,0,FULL_CIRCLE);
-radarCtx.fill();
-ssi++;
-}
-var dli=0;
-while(dli<carLots.length){
-var lot=carLots[dli];
-radarCtx.fillStyle='#4ad1ff';
-radarCtx.shadowColor='#4ad1ff';
-radarCtx.shadowBlur=10;
-radarCtx.beginPath();
-radarCtx.arc(lot.x+lot.w/2,lot.y+lot.h/2,25,0,FULL_CIRCLE);
-radarCtx.fill();
-dli++;
-}
-radarCtx.shadowBlur=0;
-if(playerProfile.order){
-var destHouse=playerProfile.order.house;
-var tx=destHouse.x+destHouse.w/2;
-var ty=destHouse.y+destHouse.h/2;
+var ssi=0;while(ssi<pizzaShops.length){var shop=pizzaShops[ssi];radarCtx.fillStyle='#ffb833';radarCtx.beginPath();radarCtx.arc(shop.x+shop.w/2,shop.y+shop.h/2,22,0,FULL_CIRCLE);radarCtx.fill();ssi++;}
+var dli=0;while(dli<carLots.length){var lot=carLots[dli];radarCtx.fillStyle='#4ad1ff';radarCtx.beginPath();radarCtx.arc(lot.x+lot.w/2,lot.y+lot.h/2,22,0,FULL_CIRCLE);radarCtx.fill();dli++;}
+radarCtx.fillStyle='#5dff8a';
+radarCtx.fillRect(raceStart.x-16,raceStart.y-16,32,32);
+var cpi=0;while(cpi<patrolUnits.length){var cop=patrolUnits[cpi];if(Math.abs(cop.x-playerCar.x)<visR&&Math.abs(cop.y-playerCar.y)<visR){var blink=Math.floor(performance.now()/200)%2;radarCtx.fillStyle=blink?'#ff5252':'#4a7bff';radarCtx.fillRect(cop.x-14,cop.y-14,28,28);}cpi++;}
+if(raceActive&&raceData){radarCtx.fillStyle='#ff9f1c';radarCtx.beginPath();radarCtx.arc(raceData.ai.x,raceData.ai.y,18,0,FULL_CIRCLE);radarCtx.fill();}
+var radarTgt=fetchCurrentTarget();
+var targetCol='#ffb833';
+if(raceActive)targetCol='#4ad1ff';
+else if(playerProfile.order)targetCol=playerProfile.order.golden?'#ffd23f':'#ff5252';
+if(radarTgt){
 var pulse=(Math.sin(performance.now()/150)+1)/2;
-var markerCol='#ff5252';
-if(playerProfile.order.golden)markerCol='#ffd23f';
-radarCtx.fillStyle=markerCol;
-radarCtx.beginPath();
-radarCtx.arc(tx,ty,20+pulse*10,0,FULL_CIRCLE);
-radarCtx.fill();
-radarCtx.strokeStyle=markerCol;
-radarCtx.lineWidth=4;
-radarCtx.beginPath();
-radarCtx.arc(tx,ty,45+pulse*20,0,FULL_CIRCLE);
-radarCtx.stroke();
-}
-if(!playerProfile.highwayUnlocked){
-var rbi=0;
-while(rbi<roadBlocks.length){
-var rb=roadBlocks[rbi];
-radarCtx.fillStyle='#ff5252';
-radarCtx.beginPath();
-radarCtx.arc(rb.x+rb.w/2,rb.y+rb.h/2,18,0,FULL_CIRCLE);
-radarCtx.fill();
-rbi++;
-}
+radarCtx.fillStyle=targetCol;
+radarCtx.beginPath();radarCtx.arc(radarTgt.x,radarTgt.y,18+pulse*8,0,FULL_CIRCLE);radarCtx.fill();
+radarCtx.strokeStyle=targetCol;radarCtx.lineWidth=4;
+radarCtx.beginPath();radarCtx.arc(radarTgt.x,radarTgt.y,40+pulse*16,0,FULL_CIRCLE);radarCtx.stroke();
 }
 radarCtx.restore();
+radarCtx.save();
+radarCtx.translate(w/2,h/2);
+if(radarNorthUp)radarCtx.rotate(playerCar.angle+Math.PI/2);
 radarCtx.fillStyle='#5dff8a';
-radarCtx.shadowColor='#5dff8a';
-radarCtx.shadowBlur=8;
 radarCtx.beginPath();
-radarCtx.moveTo(w/2,h/2-10);
-radarCtx.lineTo(w/2+7,h/2+8);
-radarCtx.lineTo(w/2,h/2+3);
-radarCtx.lineTo(w/2-7,h/2+8);
-radarCtx.closePath();
-radarCtx.fill();
-radarCtx.shadowBlur=0;
-radarCtx.beginPath();
-radarCtx.arc(w/2,h/2,w/2-2,0,FULL_CIRCLE);
+radarCtx.moveTo(0,-9);radarCtx.lineTo(7,7);radarCtx.lineTo(0,3);radarCtx.lineTo(-7,7);
+radarCtx.closePath();radarCtx.fill();
+radarCtx.restore();
+if(radarTgt){
+var dxT=radarTgt.x-playerCar.x,dyT=radarTgt.y-playerCar.y;
+var distT=Math.hypot(dxT,dyT);
+if(distT>visR*0.85){
+var edgeAng=Math.atan2(dyT,dxT)+rotAngle;
+var exx=w/2+Math.cos(edgeAng)*(w/2-16);
+var eyy=h/2+Math.sin(edgeAng)*(h/2-16);
+exx=pinValue(exx,12,w-12);eyy=pinValue(eyy,14,h-14);
+var pulse2=0.6+0.4*Math.sin(performance.now()/200);
+radarCtx.save();
+radarCtx.translate(exx,eyy);
+radarCtx.rotate(edgeAng);
+radarCtx.globalAlpha=pulse2;
+radarCtx.fillStyle=targetCol;
+radarCtx.beginPath();radarCtx.moveTo(7,0);radarCtx.lineTo(-5,-6);radarCtx.lineTo(-5,6);radarCtx.closePath();radarCtx.fill();
+radarCtx.globalAlpha=1;
+radarCtx.restore();
+}
+}
+var nAng=radarNorthUp?0:(-Math.PI/2-playerCar.angle);
+var nxp=pinValue(w/2+Math.sin(nAng)*(w/2-14),10,w-10);
+var nyp=pinValue(h/2-Math.cos(nAng)*(h/2-14),12,h-10);
+radarCtx.fillStyle='#4ad1ff';
+radarCtx.font='bold 9px monospace';
+radarCtx.textAlign='center';radarCtx.textBaseline='middle';
+radarCtx.fillText('N',nxp,nyp);
+radarCtx.textBaseline='alphabetic';
 radarCtx.strokeStyle='rgba(0,255,100,0.3)';
-radarCtx.lineWidth=4;
-radarCtx.stroke();
+radarCtx.lineWidth=3;
+radarCtx.strokeRect(1,1,w-2,h-2);
 }
 var speedoCanvas=document.getElementById('speedoCanvas');
 var gaugeCtx=speedoCanvas.getContext('2d');
@@ -4877,7 +5176,9 @@ wantedWidgetEl=document.getElementById('wantedWidget'),
 wantedStarsEl=document.getElementById('wantedStars'),
 wantedSubEl=document.getElementById('wantedSub'),
 evadeBarEl=document.getElementById('evadeBar'),
-fxChipsEl=document.getElementById('fxChips');
+fxChipsEl=document.getElementById('fxChips'),
+gpsReadoutEl=document.getElementById('gpsReadout'),
+radarModeEl=document.getElementById('radarMode');
 radioNameEl.textContent=RADIO_STATIONS[radioDial];
 radioWidgetEl.classList.toggle('on',radioDial>0);
 radioWidgetEl.addEventListener('click',rotateRadioDial);
@@ -4950,11 +5251,30 @@ evadeBarEl.style.width=(pinValue(escapeTimer/3.5,0,1)*100)+'%';
 var chipHtml='';
 if(magnetTimer>0)chipHtml+='<div class="fxChip fxC-mag">MAGNET '+Math.ceil(magnetTimer)+'s</div>';
 if(shieldActive)chipHtml+='<div class="fxChip fxC-shd">SHIELD READY</div>';
+if(raceActive&&raceData){
+var hx=raceData.house.x+raceData.house.w/2,hy=raceData.house.y+raceData.house.h/2;
+var pD=spanBetween(playerCar.x,playerCar.y,hx,hy);
+var aD=spanBetween(raceData.ai.x,raceData.ai.y,hx,hy);
+if(pD<=aD)chipHtml+='<div class="fxChip" style="color:#04220e;background:#5dff8a;">RACE: LEADING</div>';
+else chipHtml+='<div class="fxChip" style="color:#2a0404;background:#ff5252;">RACE: BEHIND!</div>';
+}
 if(fxChipsEl.innerHTML!==chipHtml)fxChipsEl.innerHTML=chipHtml;
 var objective=fetchCurrentTarget();
 var objDist=0;
 if(objective)objDist=spanBetween(playerCar.x,playerCar.y,objective.x,objective.y);
-if(playerProfile.order){
+if(raceActive&&raceData){
+orderTypeEl.style.display='inline-block';
+orderTypeEl.textContent='RACE';
+orderTypeEl.style.background='#4ad1ff';
+orderTypeEl.classList.remove('golden');
+orderTitleEl.textContent='CITY RACE → HOUSE #'+(100+raceData.house.id);
+orderSubEl.textContent='Beat the rival to the target!';
+orderSubEl.className='';
+orderPayEl.textContent='$400';
+orderDistEl.textContent=Math.round(objDist/6)+'m';
+timerBarEl.style.width='100%';
+orderStreakEl.textContent='';
+}else if(playerProfile.order){
 var ticket=playerProfile.order;
 var cargoInfo=CARGO_TYPES[ticket.type];
 orderTypeEl.style.display='inline-block';
@@ -5005,7 +5325,7 @@ orderStreakEl.textContent=streakTxt;
 orderTypeEl.style.display='none';
 orderTypeEl.classList.remove('golden');
 orderTitleEl.textContent='HEAD TO A PIZZA SHOP';
-orderSubEl.textContent='Follow the arrow above your car';
+orderSubEl.textContent='Follow the blue GPS line on the road';
 orderSubEl.className='';
 orderPayEl.textContent='';
 orderDistEl.textContent=Math.round(objDist/6)+'m';
@@ -5014,6 +5334,14 @@ var streakTxt2='';
 if(deliveryStreak>0)streakTxt2='STREAK ×'+deliveryStreak;
 orderStreakEl.textContent=streakTxt2;
 }
+var routeDist=0;var gri=0;
+while(gri<gpsRoute.length-1){routeDist+=spanBetween(gpsRoute[gri].x,gpsRoute[gri].y,gpsRoute[gri+1].x,gpsRoute[gri+1].y);gri++;}
+if(routeDist>1){
+var etaSec=routeDist/Math.max(playerCar.speed,80);
+var etaMin=Math.floor(etaSec/60);var etaS=Math.floor(etaSec%60);
+gpsReadoutEl.textContent='DEST '+Math.round(routeDist/6)+'m · ETA '+etaMin+':'+(etaS<10?'0':'')+etaS;
+}else{gpsReadoutEl.textContent='DEST --';}
+radarModeEl.textContent=radarNorthUp?'N-UP':'ROT';
 paintRadar();
 }
 var announceEl=document.getElementById('announce'),
@@ -5088,8 +5416,8 @@ refreshHUD();
 function refreshGarageList(){
 carListEl.innerHTML='';
 garageMoneyEl.textContent='WALLET: $'+Math.floor(playerProfile.money);
-if(playerProfile.highwayUnlocked)garageSubEl.textContent='Highway open — Metro City cars available!';
-else garageSubEl.textContent='Own every City car to unlock the Highway to Metro City.';
+if(playerProfile.highwayUnlocked)garageSubEl.textContent='Highway open — Metro City cars available! Raceway cars are also in stock.';
+else garageSubEl.textContent='Own every City car to unlock the Highway to Metro City. Raceway cars are open!';
 refreshRepairRow();
 var ci=0;
 while(ci<VEHICLE_CATALOG.length){
@@ -5114,6 +5442,7 @@ var nameEl=document.createElement('div');
 nameEl.className='crName';
 var nameSuffix='';
 if(spec.city===2)nameSuffix=' (Metro)';
+else if(spec.city===3)nameSuffix=' (Raceway)';
 nameEl.textContent=spec.name+nameSuffix;
 var descEl=document.createElement('div');
 descEl.className='crDesc';
@@ -5226,7 +5555,7 @@ document.getElementById('pauseOverlay').classList.toggle('open',isPaused);
 if(isPaused)refreshPauseInfo();
 playClickSound();
 }
-var LOADING_TIPS=['DRIFTING CHARGES YOUR NITRO','CLOSE CALLS PAY CASH & STYLE','CHAIN STYLE BEFORE IT FADES','SPIN A FULL DONUT FOR BONUS CASH','RAM TRAFFIC AND THE COPS WILL HUNT YOU','GRAB WRENCHES TO FIX YOUR ENGINE','RAIN MEANS SLICK ROADS & PUDDLES','DELIVER ON TIME TO BUILD STREAKS','SUSHI & CAKE = FRAGILE CARGO','V.I.P. ORDERS ONLY AFTER DARK','OWN ALL 6 CITY CARS TO OPEN THE HIGHWAY','METRO CARS PAY UP TO ×10','PRESS R TO CHANGE THE RADIO','HIGHWAY RAMPS LAUNCH YOU INTO THE AIR','BIG AIR PAYS CASH & STYLE','OIL SLICKS MAKE YOU SPIN — EASE OFF','CHEVRON PADS ARE FREE SPEED','MAGNETS PULL COINS RIGHT TO YOU','SHIELDS ABSORB ONE CRASH','GOLDEN ORDERS PAY TRIPLE — HURRY','KNOCKING CONES IS FUN. DO IT.','TRY NIGHT DRIVE FM AFTER DARK','PRESS H TO HONK — BLOCKED DRIVERS HATE IT','3 STARS? THE CHOPPER JOINS THE HUNT','RUSH HOUR TRAFFIC AT 8AM & 5PM','CHAIN ×10 STYLE FOR AN S RANK'];
+var LOADING_TIPS=['DRIFTING CHARGES YOUR NITRO','CLOSE CALLS PAY CASH & STYLE','CHAIN STYLE BEFORE IT FADES','SPIN A FULL DONUT FOR BONUS CASH','RAM TRAFFIC AND THE COPS WILL HUNT YOU','GRAB WRENCHES TO FIX YOUR ENGINE','RAIN MEANS SLICK ROADS & PUDDLES','DELIVER ON TIME TO BUILD STREAKS','SUSHI & CAKE = FRAGILE CARGO','V.I.P. ORDERS ONLY AFTER DARK','OWN ALL 6 CITY CARS TO OPEN THE HIGHWAY','METRO CARS PAY UP TO ×10','PRESS R TO CHANGE THE RADIO','HIGHWAY RAMPS LAUNCH YOU INTO THE AIR','BIG AIR PAYS CASH & STYLE','OIL SLICKS MAKE YOU SPIN — EASE OFF','CHEVRON PADS ARE FREE SPEED','MAGNETS PULL COINS RIGHT TO YOU','SHIELDS ABSORB ONE CRASH','GOLDEN ORDERS PAY TRIPLE — HURRY','KNOCKING CONES IS FUN. DO IT.','TRY NIGHT DRIVE FM AFTER DARK','PRESS H TO HONK — BLOCKED DRIVERS HATE IT','3 STARS? THE CHOPPER JOINS THE HUNT','RUSH HOUR TRAFFIC AT 8AM & 5PM','CHAIN ×10 STYLE FOR AN S RANK','FOLLOW THE BLUE GPS LINE ON THE ROAD','PRESS E AT THE CHECKERED PAD TO RACE','THE RIVAL AI ACTUALLY DRIVES THE ROUTE','WIN RACES TO FUND THE AE86','PRESS N TO TOGGLE GPS ROTATION'];
 var tickerEl=document.getElementById('tickerInner');
 var tickerText=LOADING_TIPS.join('  ·  ')+'  ·  ';
 tickerEl.textContent=tickerText+tickerText;
@@ -5251,7 +5580,7 @@ c.imageSmoothingEnabled=false;
 c.translate(35,26);
 c.scale(1.7,1.7);
 c.rotate(Math.PI/2);
-paintCarSprite(c,VEHICLE_CATALOG[5],0);
+paintCarSprite(c,VEHICLE_CATALOG[12],0);
 })();
 var gameRunning=false,lastFrameTime=performance.now(),attractTimer=0,walletCheckCd=0;
 function igniteEngine(){
@@ -5263,7 +5592,7 @@ camera.x=playerCar.x;
 camera.y=playerCar.y;
 sweepTone(80,240,0.4,'sawtooth',0.06);
 sweepTone(120,320,0.3,'sawtooth',0.05,0.25);
-pushToast('Shift started — grab an order!','info');
+pushToast('Shift started — grab an order, or head west to race!','info');
 setTimeout(function(){document.getElementById('controlsHint').style.opacity='0';},9000);
 }
 document.getElementById('startBtn').addEventListener('click',igniteEngine);
@@ -5285,6 +5614,7 @@ if(gameRunning&&!garageShowing&&!isPaused){
 if(simDt>0){
 stepPlayerPhysics(simDt);
 tickTrafficFlow(simDt);
+tickRace(simDt);
 tickPursuit(simDt);
 decayWantedHeat(simDt);
 tickPickups(simDt);
@@ -5296,6 +5626,11 @@ tickGlowWorms(simDt);
 tickBalloons(simDt);
 tickStyleChain(simDt);
 scanInteractionZones();
+gpsRouteTimer-=dt;
+var navTgt=fetchCurrentTarget();
+if(navTgt){
+if(gpsRouteTimer<=0){gpsRouteTimer=0.4;gpsRoute=findGpsRoute(playerCar.x,playerCar.y,navTgt.x,navTgt.y);}
+}else{gpsRoute=[];}
 walletCheckCd-=dt;
 if(walletCheckCd<=0){
 walletCheckCd=1.5;
@@ -5305,6 +5640,13 @@ unlockBadge('metro');
 if(!metroGreeted){
 metroGreeted=true;
 pushToast('Welcome to METRO CITY — new shop, new dealer!','info');
+}
+}
+if(playerCar.x<-60){
+unlockBadge('raceway');
+if(!racewayGreeted){
+racewayGreeted=true;
+pushToast('RACEWAY DISTRICT — find the checkered pad to race!','info');
 }
 }
 persistProfile();
@@ -5322,13 +5664,13 @@ var lookAheadX=playerCar.x+(playerCar.vx/Math.max(playerCar.def.maxSpeed,1))*42;
 var lookAheadY=playerCar.y+(playerCar.vy/Math.max(playerCar.def.maxSpeed,1))*42;
 camera.x=blendToward(camera.x,lookAheadX,0.12);
 camera.y=blendToward(camera.y,lookAheadY,0.12);
-camera.x=pinValue(camera.x,VIEW_W/2,MAP_W-VIEW_W/2);
+camera.x=pinValue(camera.x,MAP_X0+VIEW_W/2,MAP_W-VIEW_W/2);
 camera.y=pinValue(camera.y,VIEW_H/2,MAP_H-VIEW_H/2);
 }else if(!gameRunning){
 attractTimer+=dt;
-var panX=T1_X1/2+Math.cos(attractTimer*0.1)*1100;
+var panX=-900+Math.cos(attractTimer*0.08)*3200;
 var panY=T1_Y1/2+Math.sin(attractTimer*0.063)*1100;
-camera.x=pinValue(panX,VIEW_W/2,MAP_W-VIEW_W/2);
+camera.x=pinValue(panX,MAP_X0+VIEW_W/2,MAP_W-VIEW_W/2);
 camera.y=pinValue(panY,VIEW_H/2,MAP_H-VIEW_H/2);
 }
 cameraShake=Math.max(0,cameraShake-dt*16);
