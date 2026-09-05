@@ -310,7 +310,6 @@ filter:drop-shadow(3px 3px 0 rgba(0,0,0,0.75));border-radius:0;position:relative
 #announceTxt{font-size:16px;}
 #radarWrap{width:160px;height:110px;}
 }
-/* ═══════════ POLISH PASS · v1.1 FULL SEND ═══════════ */
 html,body{overscroll-behavior:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
 ::selection{background:var(--amber);color:#1a1206;}
 button:focus-visible,.swatch:focus-visible,#radioWidget:focus-visible,.tcBtn:focus-visible{outline:3px solid var(--cyan);outline-offset:2px;}
@@ -350,7 +349,6 @@ body.touch #turnHint{bottom:calc(352px + env(safe-area-inset-bottom));}
 #carBadge{transform:translateX(-50%) scale(.9);transform-origin:top center;}
 #announce{top:20%;}
 }
-/* ═══════════ POLISH PASS · v1.2 ═══════════ */
 .toast.good::before{content:'✔ ';}
 .toast.info::before{content:'► ';}
 .toast.warn::before{content:'!! ';}
@@ -388,7 +386,6 @@ body.touch #fxChips{left:calc(12px + env(safe-area-inset-left));}
 body.touch #moneyWidget{right:calc(12px + env(safe-area-inset-right));}
 body.touch #orderTicket{right:calc(12px + env(safe-area-inset-right));}
 body.touch #wantedWidget{right:calc(12px + env(safe-area-inset-right));}
-/* ═══════════ POLISH PASS · v1.3 — joystick + pedals ═══════════ */
 #steerPad{position:relative;width:152px;height:152px;border-radius:50%;background:radial-gradient(circle at 50% 42%,rgba(26,34,56,0.9),rgba(7,10,20,0.94));border:3px solid var(--bezel);box-shadow:4px 4px 0 rgba(0,0,0,.7),inset 0 0 0 2px var(--bezel-dark),inset 0 0 24px rgba(74,209,255,0.06);touch-action:none;pointer-events:auto;opacity:.94;}
 #steerPad::before{content:'◄';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-family:'Press Start 2P',monospace;font-size:12px;color:rgba(255,184,51,0.55);text-shadow:1px 1px 0 #000;pointer-events:none;}
 #steerPad::after{content:'►';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:'Press Start 2P',monospace;font-size:12px;color:rgba(255,184,51,0.55);text-shadow:1px 1px 0 #000;pointer-events:none;}
@@ -583,16 +580,16 @@ body.touch #wantedWidget{right:calc(12px + env(safe-area-inset-right));}
 </div>
 <div id="startScreen">
 <div class="ticker"><div class="tickerInner" id="tickerInner"></div></div>
-<div class="ss-ver">v1.3 · FULL SEND</div>
+<div class="ss-ver">v2.2 · CINEMATIC STORY</div>
 <div class="ss-main">
 <div class="ss-left">
 <div class="ss-kicker">COURIER DISPATCH TERMINAL · SHIFT #001</div>
 <h1>PIXEL DRIFT<br><span>COURIER</span></h1>
-<p class="ss-tag">deliber food, get <b>MONEEEEEEY</b> cuz u poor and need money, dug <b> but hey rules are rules,</b>ther is police. now with <b>MODS, UPGRADES &amp; DRIFT ZONES</b></p>
+<p class="ss-tag">deliber food, get <b>MONEEEEEEY</b> cuz u poor and need money, dug <b> but hey rules are rules,</b>ther is police. now with <b>CINEMATIC STORY, MODS, UPGRADES &amp; DRIFT ZONES</b></p>
 <div class="ss-keys">
 <span class="kbd">W A S D</span> drive &nbsp; <span class="kbd">SPACE</span> handbrake drift<br>
 <span class="kbd">SHIFT</span> nitro &nbsp; <span class="kbd">H</span> horn &nbsp; <span class="kbd">G</span> garage + mods<br>
-<span class="kbd">T</span> shop upgrades &nbsp; <span class="kbd">R</span> radio &nbsp; <span class="kbd">P</span> pause
+<span class="kbd">T</span> shop upgrades &nbsp; <span class="kbd">R</span> radio &nbsp; <span class="kbd">P</span> pause &nbsp; <span class="kbd">C</span> photo
 </div>
 <div id="startBtn">go to work blud <small>ENTER</small></div>
 </div>
@@ -883,19 +880,21 @@ vi++;
 })();
 var gpsNodes=[],gpsAdj=[],gpsRoute=[],gpsRouteTimer=0,gpsIdx=0;
 var turnInfo=null,turnTimer=0,offRouteT=0;
+/* ══ FIXED MEGA GPS — dense nodes + matched router (replaces old GPS block) ══ */
 (function buildRouteGraph(){
 var vRoads=[],hRoads=[];var ri=0;
 while(ri<streetGrid.length){if(streetGrid[ri].type==='v')vRoads.push(streetGrid[ri]);else hRoads.push(streetGrid[ri]);ri++;}
+var SUBDIV=140;
+function addNode(x,y,road,type,along){var id=gpsNodes.length;gpsNodes.push({x:x,y:y,road:road,type:type,along:along});gpsAdj.push([]);return id;}
+function link(a,b){gpsAdj[a].push(b);gpsAdj[b].push(a);}
 var nodeMap={};
-function addNode(x,y,av,ah){var id=gpsNodes.length;gpsNodes.push({x:x,y:y,alongV:av,alongH:ah});gpsAdj.push([]);return id;}
-function link(a,b,type,road){gpsAdj[a].push({to:b,type:type,road:road});gpsAdj[b].push({to:a,type:type,road:road});}
 var vi=0;
 while(vi<vRoads.length){
 var v=vRoads[vi];var hi=0;
 while(hi<hRoads.length){
 var h=hRoads[hi];
 if(h.y>=v.y0&&h.y<=v.y1&&v.x>=h.x0&&v.x<=h.x1){
-var id=addNode(fetchRoadCenterline(v,h.y),fetchRoadCenterline(h,v.x),h.y,v.x);
+var id=addNode(fetchRoadCenterline(v,h.y),h.y,v,'v',h.y);
 nodeMap[vi+'_'+hi]={id:id,alongV:h.y,alongH:v.x,vi:vi,hi:hi};
 }
 hi++;
@@ -904,24 +903,62 @@ vi++;
 }
 var byV={};
 for(var k1 in nodeMap){var r1=nodeMap[k1];if(!byV[r1.vi])byV[r1.vi]=[];byV[r1.vi].push(r1);}
-for(var vk in byV){var av=byV[vk].sort(function(a,b){return a.alongV-b.alongV;});var j=0;while(j<av.length-1){link(av[j].id,av[j+1].id,'v',vRoads[vk]);j++;}}
+for(var vk in byV){
+var av=byV[vk].sort(function(a,b){return a.alongV-b.alongV;});
+var road=vRoads[vk];
+var j=0;
+while(j<av.length-1){
+var A=av[j],B=av[j+1];
+var span=B.alongV-A.alongV;
+var steps=Math.max(1,Math.round(Math.abs(span)/SUBDIV));
+var prev=A.id;var s=1;
+while(s<steps){
+var yy=A.alongV+span*s/steps;
+var nid=addNode(fetchRoadCenterline(road,yy),yy,road,'v',yy);
+link(prev,nid);prev=nid;s++;
+}
+link(prev,B.id);
+j++;
+}
+}
 var byH={};
 for(var k2 in nodeMap){var r2=nodeMap[k2];if(!byH[r2.hi])byH[r2.hi]=[];byH[r2.hi].push(r2);}
-for(var hk in byH){var ah=byH[hk].sort(function(a,b){return a.alongH-b.alongH;});var j2=0;while(j2<ah.length-1){link(ah[j2].id,ah[j2+1].id,'h',hRoads[hk]);j2++;}}
+for(var hk in byH){
+var ah=byH[hk].sort(function(a,b){return a.alongH-b.alongH;});
+var roadH=hRoads[hk];
+var j2=0;
+while(j2<ah.length-1){
+var HA=ah[j2],HB=ah[j2+1];
+var spanH=HB.alongH-HA.alongH;
+var stepsH=Math.max(1,Math.round(Math.abs(spanH)/SUBDIV));
+var prevH=HA.id;var s2=1;
+while(s2<stepsH){
+var xx=HA.alongH+spanH*s2/stepsH;
+var nidH=addNode(xx,fetchRoadCenterline(roadH,xx),roadH,'h',xx);
+link(prevH,nidH);prevH=nidH;s2++;
+}
+link(prevH,HB.id);
+j2++;
+}
+}
 })();
 function nearestGpsNode(px,py){
 var best=-1,bd=Infinity,i=0;
 while(i<gpsNodes.length){var dx=gpsNodes[i].x-px,dy=gpsNodes[i].y-py,d=dx*dx+dy*dy;if(d<bd){bd=d;best=i;}i++;}
 return best;
 }
-function densifyGpsSegment(pts,A,B,edge){
-var na=gpsNodes[A],nb=gpsNodes[B];
-if(!edge){pts.push({x:nb.x,y:nb.y});return;}
-var road=edge.road;
-var span=edge.type==='v'?Math.abs(nb.alongV-na.alongV):Math.abs(nb.alongH-na.alongH);
-var steps=Math.max(2,Math.round(span/26));var s=1;
-if(edge.type==='v'){var a0=na.alongV,a1=nb.alongV;while(s<=steps){var yy=a0+(a1-a0)*s/steps;pts.push({x:fetchRoadCenterline(road,yy),y:yy});s++;}}
-else{var x0=na.alongH,x1=nb.alongH;while(s<=steps){var xx=x0+(x1-x0)*s/steps;pts.push({x:xx,y:fetchRoadCenterline(road,xx)});s++;}}
+function densifyPair(pts,A,B){
+if(A&&B&&A.road&&A.road===B.road){
+var span=B.along-A.along;
+var steps=Math.max(1,Math.ceil(Math.abs(span)/26));
+var s=1;
+while(s<=steps){
+var al=A.along+span*s/steps;
+if(A.type==='v')pts.push({x:fetchRoadCenterline(A.road,al),y:al});
+else pts.push({x:al,y:fetchRoadCenterline(A.road,al)});
+s++;
+}
+}else if(B){pts.push({x:B.x,y:B.y});}
 }
 function findGpsRoute(ax,ay,bx,by){
 if(gpsNodes.length===0)return [{x:ax,y:ay},{x:bx,y:by}];
@@ -931,25 +968,26 @@ if(start===goal)return [{x:ax,y:ay},{x:bx,y:by}];
 var n=gpsNodes.length;
 var gScore=[],came=[],closed=[];
 var i=0;while(i<n){gScore[i]=Infinity;came[i]=-1;closed[i]=false;i++;}
+var heap=[];
+function hPush(id,f){heap.push({id:id,f:f});var c=heap.length-1;while(c>0){var p=(c-1)>>1;if(heap[p].f<=heap[c].f)break;var t=heap[p];heap[p]=heap[c];heap[c]=t;c=p;}}
+function hPop(){var top=heap[0];var last=heap.pop();var len=heap.length;if(len>0){heap[0]=last;var c=0;for(;;){var l=c*2+1,r=l+1,m=c;if(l<len&&heap[l].f<heap[m].f)m=l;if(r<len&&heap[r].f<heap[m].f)m=r;if(m===c)break;var t2=heap[m];heap[m]=heap[c];heap[c]=t2;c=m;}}return top;}
+function heur(idx){var dx=gpsNodes[idx].x-gpsNodes[goal].x,dy=gpsNodes[idx].y-gpsNodes[goal].y;return Math.sqrt(dx*dx+dy*dy);}
 gScore[start]=0;
-var open=[start];
-function heur(idx){var dx=gpsNodes[idx].x-bx,dy=gpsNodes[idx].y-by;return Math.sqrt(dx*dx+dy*dy);}
+hPush(start,heur(start));
 var guard=0;
-while(open.length&&guard<6000){
+while(heap.length>0&&guard<30000){
 guard++;
-var bi=0,bf=Infinity,oi=0;
-while(oi<open.length){var f=gScore[open[oi]]+heur(open[oi]);if(f<bf){bf=f;bi=oi;}oi++;}
-var cur=open.splice(bi,1)[0];
-if(cur===goal)break;
+var cur=hPop().id;
 if(closed[cur])continue;
 closed[cur]=true;
+if(cur===goal)break;
 var edges=gpsAdj[cur],ei=0;
 while(ei<edges.length){
-var e=edges[ei],nb=e.to;
+var nb=edges[ei];
 if(!closed[nb]){
 var w=Math.hypot(gpsNodes[nb].x-gpsNodes[cur].x,gpsNodes[nb].y-gpsNodes[cur].y);
 var tg=gScore[cur]+w;
-if(tg<gScore[nb]){gScore[nb]=tg;came[nb]=cur;if(open.indexOf(nb)===-1)open.push(nb);}
+if(tg<gScore[nb]){gScore[nb]=tg;came[nb]=cur;hPush(nb,tg+heur(nb));}
 }
 ei++;
 }
@@ -960,12 +998,7 @@ while(c!==-1){path.push(c);c=came[c];}
 path.reverse();
 var pts=[{x:ax,y:ay}];
 var pi2=0;
-while(pi2<path.length-1){
-var A=path[pi2],B=path[pi2+1],edge=null,e2=0;
-while(e2<gpsAdj[A].length){if(gpsAdj[A][e2].to===B){edge=gpsAdj[A][e2];break;}e2++;}
-densifyGpsSegment(pts,A,B,edge);
-pi2++;
-}
+while(pi2<path.length-1){densifyPair(pts,gpsNodes[path[pi2]],gpsNodes[path[pi2+1]]);pi2++;}
 pts.push({x:bx,y:by});
 return pts;
 }
@@ -1126,7 +1159,7 @@ var VEHICLE_CATALOG=[
 {id:3,name:'LOUD NOISES',price:900,mult:1.6,maxSpeed:320,accel:215,grip:6.5,turnRate:2.6,L:30,W:15,body:'#2a3d66',body2:'#1a1a1a',stripe:'#f2e9d8',city:1,desc:'V8 engine, zero brakes. The neighbors filed 14 complaints.'},
 {id:4,name:'Sir Skids-a-Lot',price:1600,mult:1.9,maxSpeed:330,accel:225,grip:5.0,turnRate:3.3,L:27,W:14,body:'#7a7a8a',body2:'#1a1a1a',stripe:'#ffd23f',city:1,desc:'Knighted for distinguished service in the art of going sideways.'},
 {id:5,name:'Corner Gremlin',price:2400,mult:2.2,maxSpeed:335,accel:235,grip:10.5,turnRate:3.5,L:27,W:14,body:'#e8e0c8',body2:'#1a1a1a',stripe:'#c14953',city:1,desc:'Lives in corners. Pays rent in tire marks.'},
-{id:6,name:'Sideways Steve',price:3600,mult:2.6,maxSpeed:360,accel:245,grip:5.2,turnRate:3.0,L:28,W:14,body:'#e0912f',body2:'#1a1a1a',stripe:'#161616',city:1,desc:'Steve has never once driven straight. Legend.'},
+{id:6,name:'Sideways',price:3600,mult:2.6,maxSpeed:360,accel:245,grip:5.2,turnRate:3.0,L:28,W:14,body:'#e0912f',body2:'#1a1a1a',stripe:'#161616',city:1,desc:'Vega Odysse has never once driven straight. Absoulute Legend.'},
 {id:7,name:'Yeet Machine',price:5000,mult:3.0,maxSpeed:395,accel:275,grip:3.6,turnRate:3.8,L:28,W:13,body:'#b8ff9a',body2:'#1a1a1a',stripe:'#111',city:1,desc:'Top speed: yes. Grip: lol. Do not sneeze while driving.'},
 {id:8,name:'Disco Disaster',price:6500,mult:3.6,maxSpeed:410,accel:265,grip:8.5,turnRate:3.2,L:29,W:14,body:'#5a3a8a',body2:'#1a1a1a',stripe:'#37f5e0',city:1,desc:'Banned in 3 cities for being too fabulous.'},
 {id:9,name:'Traffic Weasel',price:9000,mult:4.2,maxSpeed:430,accel:260,grip:9.0,turnRate:3.3,L:28,W:14,body:'#4cc9f0',body2:'#1a1a1a',stripe:'#f4f1de',city:2,desc:'Slips through traffic like a weasel with a deadline.'},
@@ -1458,7 +1491,6 @@ right:!!(heldKeys['KeyD']||heldKeys['ArrowRight']||heldKeys['tcR']),
 handbrake:!!(heldKeys['Space']||heldKeys['tcDrift']),
 nitro:!!(heldKeys['ShiftLeft']||heldKeys['ShiftRight']||heldKeys['tcN'])};
 }
-/* v1.2: mobile UI is strictly for real mobile devices — coarse pointer on a small screen */
 function refreshMobileMode(){
 var isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
 var coarse=false;
@@ -1483,7 +1515,6 @@ btn.addEventListener('contextmenu',function(e){e.preventDefault();});
 })(touchBtns[tbi]);
 tbi++;
 }
-/* v1.3: analog-style steering joystick — steer with X, gas/brake with Y */
 (function(){
 var pad=document.getElementById('steerPad');
 var knob=document.getElementById('steerKnob');
@@ -5970,7 +6001,7 @@ document.getElementById('pauseOverlay').classList.toggle('open',isPaused);
 if(isPaused)refreshPauseInfo();
 playClickSound();
 }
-var LOADING_TIPS=['DRIFTING CHARGES YOUR NITRO','CLOSE CALLS PAY CASH & STYLE','CHAIN STYLE BEFORE IT FADES','SPIN A FULL DONUT FOR BONUS CASH','RAM TRAFFIC AND THE COPS WILL HUNT YOU','GRAB WRENCHES TO FIX YOUR ENGINE','RAIN MEANS SLICK ROADS & PUDDLES','DELIVER ON TIME TO BUILD STREAKS','SUSHI & CAKE = FRAGILE CARGO','V.I.P. ORDERS ONLY AFTER DARK','OWN ALL CITY CARS TO OPEN THE HIGHWAY','METRO CARS PAY UP TO ×10','PRESS R TO CHANGE THE RADIO','HIGHWAY RAMPS LAUNCH YOU INTO THE AIR','BIG AIR PAYS CASH & STYLE','OIL SLICKS MAKE YOU SPIN — EASE OFF','CHEVRON PADS ARE FREE SPEED','MAGNETS PULL COINS RIGHT TO YOU','SHIELDS ABSORB ONE CRASH','GOLDEN ORDERS PAY TRIPLE — HURRY','KNOCKING CONES IS FUN. DO IT.','TRY NIGHT DRIVE FM AFTER DARK','PRESS H TO HONK — BLOCKED DRIVERS HATE IT','3 STARS? THE CHOPPER JOINS THE HUNT','RUSH HOUR TRAFFIC AT 8AM & 5PM','CHAIN ×10 STYLE FOR AN S RANK','FOLLOW THE BLUE GPS LINE ON THE ROAD','PRESS E AT THE CHECKERED PAD TO RACE','THE RIVAL AI ACTUALLY DRIVES THE ROUTE','WIN RACES TO FUND THE AE86','PRESS N TO TOGGLE GPS ROTATION','OWN EVERY CAR TO UNLOCK TRUCKS','TRUCKS CARRY MULTIPLE ORDERS AT ONCE','LOAD UP, THEN DROP HOUSE BY HOUSE','TRUCKS TURN LIKE HOUSES. BRAKE EARLY.','THE DUCK QUACKS. TRY IT.','THE YEET MACHINE HAS NO GRIP. NONE.','COPS HATE CORNERS. USE CORNERS.','THE LONG BOI HAS ITS OWN ZIP CODE','UFO 404 DOES NOT EXIST. DO NOT BUY IT.','PRESS T AT THE PIZZA SHOP TO UPGRADE IT','MOD YOUR CARS IN THE GARAGE [MOD]','DRIFT INSIDE PINK ZONES FOR PASSIVE CASH','HIT SPEED CAMERAS AT 180+ MPH FOR CASH','MYSTERY CRATES: 90% REWARD, 10% REGRET','LEGENDARY ORDERS PAY 5X. DO NOT BE LATE.','PIT STOP DINERS REPAIR + REFUEL FOR CASH','8 GOLDEN SLICES ARE HIDDEN ON THE MAP'];
+var LOADING_TIPS=['DRIFTING CHARGES YOUR NITRO','CLOSE CALLS PAY CASH & STYLE','CHAIN STYLE BEFORE IT FADES','SPIN A FULL DONUT FOR BONUS CASH','RAM TRAFFIC AND THE COPS WILL HUNT YOU','GRAB WRENCHES TO FIX YOUR ENGINE','RAIN MEANS SLICK ROADS & PUDDLES','DELIVER ON TIME TO BUILD STREAKS','SUSHI & CAKE = FRAGILE CARGO','V.I.P. ORDERS ONLY AFTER DARK','OWN ALL CITY CARS TO OPEN THE HIGHWAY','METRO CARS PAY UP TO ×10','PRESS R TO CHANGE THE RADIO','HIGHWAY RAMPS LAUNCH YOU INTO THE AIR','BIG AIR PAYS CASH & STYLE','OIL SLICKS MAKE YOU SPIN — EASE OFF','CHEVRON PADS ARE FREE SPEED','MAGNETS PULL COINS RIGHT TO YOU','SHIELDS ABSORB ONE CRASH','GOLDEN ORDERS PAY TRIPLE — HURRY','KNOCKING CONES IS FUN. DO IT.','TRY NIGHT DRIVE FM AFTER DARK','PRESS H TO HONK — BLOCKED DRIVERS HATE IT','3 STARS? THE CHOPPER JOINS THE HUNT','RUSH HOUR TRAFFIC AT 8AM & 5PM','CHAIN ×10 STYLE FOR AN S RANK','FOLLOW THE BLUE GPS LINE ON THE ROAD','PRESS E AT THE CHECKERED PAD TO RACE','THE RIVAL AI ACTUALLY DRIVES THE ROUTE','WIN RACES TO FUND THE AE86','PRESS N TO TOGGLE GPS ROTATION','OWN EVERY CAR TO UNLOCK TRUCKS','TRUCKS CARRY MULTIPLE ORDERS AT ONCE','LOAD UP, THEN DROP HOUSE BY HOUSE','TRUCKS TURN LIKE HOUSES. BRAKE EARLY.','THE DUCK QUACKS. TRY IT.','THE YEET MACHINE HAS NO GRIP. NONE.','COPS HATE CORNERS. USE CORNERS.','THE LONG BOI HAS ITS OWN ZIP CODE','UFO 404 DOES NOT EXIST. DO NOT BUY IT.','PRESS T AT THE PIZZA SHOP TO UPGRADE IT','MOD YOUR CARS IN THE GARAGE [MOD]','DRIFT INSIDE PINK ZONES FOR PASSIVE CASH','HIT SPEED CAMERAS AT 180+ MPH FOR CASH','MYSTERY CRATES: 90% REWARD, 10% REGRET','LEGENDARY ORDERS PAY 5X. DO NOT BE LATE.','PIT STOP DINERS REPAIR + REFUEL FOR CASH','8 GOLDEN SLICES ARE HIDDEN ON THE MAP','PEOPLE WILL PULL UP AND TALK TO YOU. SOME DRIFT.','PRESS C FOR A PHOTO, GET PAID $5'];
 var tickerEl=document.getElementById('tickerInner');
 var tickerText=LOADING_TIPS.join('  ·  ')+'  ·  ';
 tickerEl.textContent=tickerText+tickerText;
@@ -6002,7 +6033,6 @@ var startScreenEl=document.getElementById('startScreen');
 function igniteEngine(){
 if(gameRunning)return;
 bootAudioEngine();
-/* v1.3: CRT power-off exit, then physically remove the intro — road & car can never linger */
 if(startScreenEl){
 startScreenEl.classList.add('leaving');
 setTimeout(function(){
@@ -6299,6 +6329,599 @@ camera.y-=jitterY;
 refreshHUD();
 }
 requestAnimationFrame(mainLoop);
+/* ══════════════════════════════════════════════════════════════════════
+   CINEMATIC STORY PACK v3 — characters drive up, get out, walk & talk
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+'use strict';
+if(window.__pdcCinePack)return;window.__pdcCinePack=1;
+try{
+var css=document.createElement('style');
+css.textContent=
+'#cineLetterTop,#cineLetterBot{position:absolute;left:0;right:0;height:0;background:#000;z-index:42;transition:height .5s cubic-bezier(.2,1,.3,1);pointer-events:none;}'+
+'#cineLetterTop{top:0}#cineLetterBot{bottom:0}'+
+'body.cineMode #cineLetterTop,body.cineMode #cineLetterBot{height:7vh}'+
+'#cineBar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(7vh + 12px);width:min(680px,94vw);z-index:47;display:none;align-items:center;gap:12px;background:linear-gradient(180deg,#101528,#0b0f1d);border:3px solid #33415f;box-shadow:inset 0 0 0 2px #05070d,6px 6px 0 rgba(0,0,0,.7);padding:12px;font-family:"VT323",monospace;cursor:pointer;}'+
+'#cinePortrait{width:64px;height:64px;flex:none;image-rendering:pixelated;background:#070a14;border:2px solid #05070d;}'+
+'#cineName{font-family:"Press Start 2P",monospace;font-size:10px;letter-spacing:1px;margin-bottom:6px;text-shadow:2px 2px 0 #000;}'+
+'#cineText{font-size:20px;line-height:1.25;color:#e8e8e8;min-height:50px;text-shadow:1px 1px 0 #000;}'+
+'#cineChoices{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(7vh + 132px);z-index:48;display:flex;flex-direction:column;gap:7px;width:min(680px,94vw);}'+
+'.cineChoice{font-family:"VT323",monospace;font-size:18px;text-align:left;color:#ffe9a8;background:#131a30;border:2px solid #33415f;padding:7px 11px;cursor:pointer;box-shadow:2px 2px 0 rgba(0,0,0,.6);}'+
+'.cineChoice:hover{background:#22304e;color:#fff;border-color:#ffb833;}'+
+'#storyChip{position:absolute;top:44%;left:12px;padding:5px 10px;z-index:11;font-family:"Press Start 2P",monospace;font-size:7px;color:#ff9fd0;letter-spacing:1px;cursor:pointer;pointer-events:auto;display:none;}'+
+'#storyChip.show{display:block;}'+
+'#photoFlash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:48;}';
+document.head.appendChild(css);
+var appEl=document.getElementById('app');
+function mkDiv(id,html){var d=document.createElement('div');d.id=id;if(html)d.innerHTML=html;if(appEl)appEl.appendChild(d);return d;}
+mkDiv('cineLetterTop');mkDiv('cineLetterBot');
+var photoFlashEl=mkDiv('photoFlash');
+var storyChipEl=mkDiv('storyChip','▶ STORY');
+if(storyChipEl)storyChipEl.className='panel';
+var cineBar=mkDiv('cineBar','<canvas id="cinePortrait" width="64" height="64"></canvas><div style="flex:1;min-width:0"><div id="cineName"></div><div id="cineText"></div></div>');
+var cineChoices=mkDiv('cineChoices');
+var storyState={done:[],flags:{},racesWon:0,snaps:0,catRides:0};
+function saveStory(){try{localStorage.setItem('pdcCinePack',JSON.stringify(storyState));}catch(e){}}
+function loadStory(){try{var r=localStorage.getItem('pdcCinePack');if(r){var o=JSON.parse(r);for(var k in o)storyState[k]=o[k];}}catch(e){}}
+loadStory();
+/* ── character visuals ── */
+var CHARS={
+pete:{name:'PIXEL PETE',col:'#ffb833',skin:'#e8b48a',hair:'#5a3a24',hat:'cap',hatCol:'#c1382c',shirt:'#c1382c',apron:'#e8e0c8',pants:'#4a3a2a',mustache:true},
+kenji:{name:'KENJI TANAKA',col:'#ff5252',skin:'#e0b088',hair:'#1a1a22',hat:'spiky',band:'#c1382c',shirt:'#f2f2f2',pants:'#2a2a34'},
+bricks:{name:'OFFICER BRICKS',col:'#4ad1ff',skin:'#d8a070',hair:'#3a2a1a',hat:'cop',hatCol:'#1c2a5a',shirt:'#1c2a5a',pants:'#16203f',mustache:true,shades:true},
+granny:{name:'GRANNY',col:'#ff9fd0',skin:'#e8c8a8',hair:'#cfcfd6',hat:'bun',shirt:'#b06a8a',apron:'#ffffff',pants:'#7a5a6a',glasses:true},
+duke:{name:'THE DUKE',col:'#ffd23f',skin:'#e0b090',hair:'#3a2a1a',hat:'top',hatCol:'#1a1a1a',shirt:'#c8a030',pants:'#7a5f10',mustache:true,monocle:true},
+roxy:{name:'ROXY',col:'#5dff8a',skin:'#e8b890',hair:'#ff9fd0',hat:'hair',shirt:'#2a2a34',pants:'#1a1a24'},
+mama:{name:'MAMA SLICE',col:'#ff9fd0',skin:'#e8b48a',hair:'#5a3a24',hat:'chef',hatCol:'#f2f2f2',shirt:'#c1382c',apron:'#f2f2f2',pants:'#4a3a2a'},
+ghost:{name:'THE GHOST',col:'#9a8aff',skin:'#1a1a28',hair:'#14141c',hat:'none',shirt:'#14141c',pants:'#14141c'}};
+var CHAR_CARS={
+pete:{L:32,W:16,body:'#b8322c',body2:'#7c1f1b',stripe:'#ffd23f'},
+kenji:{L:27,W:13,body:'#f2f2f2',body2:'#1a1a1a',stripe:'#1a1a1a'},
+bricks:{L:29,W:14,body:'#1c2a5a',body2:'#0f1530',stripe:'#e8e8ec'},
+granny:{L:27,W:13,body:'#d98a9a',body2:'#1a1a1a',stripe:'#ffffff'},
+duke:{L:40,W:15,body:'#c8a030',body2:'#7a5f10',stripe:'#fff3b0'},
+roxy:{L:28,W:14,body:'#2a2a34',body2:'#111118',stripe:'#ff9fd0'},
+mama:{L:34,W:17,body:'#c1382c',body2:'#7c1f1b',stripe:'#f2f2f2'},
+ghost:{L:28,W:14,body:'#14141c',body2:'#0a0a10',stripe:'#9a8aff'}};
+function paintHuman(ctx,key,t,mode){
+var ch=CHARS[key];if(!ch)return;
+if(key==='ghost'){
+var ga=0.6+0.25*Math.sin(t*3);
+ctx.save();ctx.globalAlpha=ga;
+ctx.fillStyle='#1a1a28';
+ctx.beginPath();ctx.moveTo(0,-22);ctx.lineTo(8,-2);ctx.lineTo(-8,-2);ctx.closePath();ctx.fill();
+ctx.fillStyle='#26263a';ctx.beginPath();ctx.arc(0,-17,6,0,FULL_CIRCLE);ctx.fill();
+ctx.fillStyle='#9a8aff';ctx.fillRect(-3,-18,2,2);ctx.fillRect(1,-18,2,2);
+ctx.restore();return;
+}
+var f=Math.floor(t*9)%2;
+var walk=(mode==='walk');
+var talk=(mode==='talk');
+var bob=walk?(f===0?-1:0):(talk?Math.sin(t*10)*0.7:Math.sin(t*2.2)*0.5);
+var sway=walk?Math.sin(t*18)*1.2:0;
+ctx.save();
+ctx.translate(sway*0.4,bob);
+var l1=walk?(f===0?0:-2):0,l2=walk?(f===0?-2:0):0;
+ctx.fillStyle=ch.pants;
+ctx.fillRect(-4,-8+l1,3,8-l1);
+ctx.fillRect(1,-8+l2,3,8-l2);
+ctx.fillStyle=ch.shirt;
+ctx.fillRect(-5,-16,10,8);
+if(ch.apron){ctx.fillStyle=ch.apron;ctx.fillRect(-4,-14,8,6);}
+var a1=walk?(f===0?1.5:-1.5):(talk?Math.sin(t*9)*2:0);
+var a2=walk?(f===0?-1.5:1.5):(talk?Math.cos(t*9)*2:0);
+ctx.fillStyle=ch.shirt;
+ctx.fillRect(-7,-15+a1,2,6);
+ctx.fillRect(5,-15+a2,2,6);
+ctx.fillStyle=ch.skin;
+ctx.fillRect(-4,-23,8,7);
+ctx.fillStyle='#1a1210';
+ctx.fillRect(-3,-20,1.5,1.5);ctx.fillRect(1.5,-20,1.5,1.5);
+if(ch.mustache){ctx.fillStyle=ch.hair;ctx.fillRect(-3,-18,6,1.5);}
+if(ch.shades){ctx.fillStyle='#14141c';ctx.fillRect(-3.5,-20.5,7,2.2);}
+if(ch.monocle){ctx.strokeStyle='#ffd23f';ctx.lineWidth=0.8;ctx.beginPath();ctx.arc(2.2,-19.4,1.8,0,FULL_CIRCLE);ctx.stroke();}
+if(ch.glasses&&!ch.shades){ctx.strokeStyle='#8a8d98';ctx.lineWidth=0.7;ctx.strokeRect(-3.5,-20.5,3,2.5);ctx.strokeRect(0.5,-20.5,3,2.5);}
+if(ch.hat==='cap'){ctx.fillStyle=ch.hatCol;ctx.fillRect(-4.5,-25,9,3);ctx.fillRect(-4.5,-22.5,10.5,1.2);}
+else if(ch.hat==='cop'){ctx.fillStyle=ch.hatCol;ctx.fillRect(-4.5,-25.5,9,3);ctx.fillRect(-5.5,-23,11,1.3);ctx.fillStyle='#ffd23f';ctx.fillRect(-1,-25,2,1.6);}
+else if(ch.hat==='top'){ctx.fillStyle=ch.hatCol;ctx.fillRect(-3.5,-30,7,6);ctx.fillRect(-5.5,-24.5,11,1.5);}
+else if(ch.hat==='chef'){ctx.fillStyle=ch.hatCol;ctx.fillRect(-4.5,-28,9,4);ctx.fillRect(-5.5,-25.5,11,2);}
+else if(ch.hat==='bun'){ctx.fillStyle=ch.hair;ctx.fillRect(-4.5,-25,9,3);ctx.beginPath();ctx.arc(0,-26,3,0,FULL_CIRCLE);ctx.fill();}
+else if(ch.hat==='spiky'){ctx.fillStyle=ch.hair;ctx.beginPath();ctx.moveTo(-4.5,-23);ctx.lineTo(-3,-27);ctx.lineTo(-1.5,-23.5);ctx.lineTo(0,-28);ctx.lineTo(1.5,-23.5);ctx.lineTo(3,-27);ctx.lineTo(4.5,-23);ctx.closePath();ctx.fill();}
+else if(ch.hat==='hair'){ctx.fillStyle=ch.hair;ctx.fillRect(-4.5,-25.5,9,3.5);ctx.fillRect(-4.5,-23,1.5,5);ctx.fillRect(3,-23,1.5,5);}
+if(ch.band){ctx.fillStyle=ch.band;ctx.fillRect(-4.5,-23.5,9,1.6);}
+ctx.restore();
+}
+function drawPortrait(key){
+var cv=document.getElementById('cinePortrait');if(!cv)return;
+var c=cv.getContext('2d');c.imageSmoothingEnabled=false;
+c.clearRect(0,0,64,64);
+c.save();c.translate(32,58);c.scale(2.3,2.3);
+paintHuman(c,key,1.3,'stand');
+c.restore();
+}
+/* ── cinematic engine ── */
+var cine=null;
+function pickCineSpot(){
+var tries=0;
+while(tries<40){
+var p=randomRoadPointAbs();tries++;
+var d=spanBetween(playerCar.x,playerCar.y,p.x,p.y);
+if(d>260&&d<650)return p;
+}
+return randomRoadPointAbs();
+}
+function startCinematic(ch){
+if(cine)return;
+var spawn=pickCineSpot();
+var dx=spawn.x-playerCar.x,dy=spawn.y-playerCar.y,dd=Math.hypot(dx,dy)||1;
+var stop={x:playerCar.x+dx/dd*54,y:playerCar.y+dy/dd*54};
+var talk={x:playerCar.x+dx/dd*30,y:playerCar.y+dy/dd*30};
+cine={ch:ch,key:ch.cast,t:0,phase:'in',spawn:spawn,stop:stop,talk:talk,
+inDur:pinValue(dd/260,1.0,2.6),drift:!!ch.drift,flip:Math.random()<0.5,
+carX:spawn.x,carY:spawn.y,carA:Math.atan2(dy,dx),
+charOn:false,charT:0,charMode:'stand',charX:0,charY:0,lineIdx:-1,typePos:0,typeDone:false};
+document.body.classList.add('cineMode');
+showAnnouncement('STORY',ch.name,'#ff9fd0');
+sweepTone(200,500,0.3,'triangle',0.04);
+}
+function showLine(i){
+var c=cine;var ln=c.ch.lines[i];if(!ln){startReturn();return;}
+c.lineIdx=i;c.typePos=0;c.typeDone=false;
+cineChoices.innerHTML='';
+var who=CHARS[ln.who]||CHARS[c.key];
+var nEl=document.getElementById('cineName');
+if(nEl){nEl.textContent=who.name;nEl.style.color=who.col;}
+drawPortrait(ln.who==='narr'?c.key:ln.who);
+cineBar.style.display='flex';
+}
+function typeTimerCine(dt){
+var c=cine;if(!c||c.phase!=='talk')return;
+var ln=c.ch.lines[c.lineIdx];if(!ln)return;
+if(!c.typeDone){
+c.typePos=Math.min(ln.txt.length,c.typePos+dt*55);
+var tEl=document.getElementById('cineText');
+if(tEl)tEl.textContent=ln.txt.substring(0,Math.floor(c.typePos));
+if(Math.floor(c.typePos)%3===0)playTone(1050+Math.random()*250,0.012,'square',0.008);
+if(c.typePos>=ln.txt.length){c.typeDone=true;if(ln.choices)showChoicesCine(ln.choices);}
+}
+}
+function showChoicesCine(list){
+cineChoices.innerHTML='';
+var i=0;
+while(i<list.length){(function(idx){
+var b=document.createElement('button');b.className='cineChoice';b.textContent=(idx+1)+'. '+list[idx].t;
+b.addEventListener('click',function(e){e.stopPropagation();if(list[idx].fn)list[idx].fn();playBuySound();cineChoices.innerHTML='';nextLineCine();});
+cineChoices.appendChild(b);
+})(i);i++;}
+}
+function advanceCine(){
+var c=cine;if(!c||c.phase!=='talk')return;
+var ln=c.ch.lines[c.lineIdx];if(!ln)return;
+if(!c.typeDone){c.typePos=ln.txt.length;return;}
+if(ln.choices&&cineChoices.children.length===0){showChoicesCine(ln.choices);return;}
+if(ln.choices)return;
+nextLineCine();
+}
+function nextLineCine(){
+var c=cine;
+if(c.lineIdx+1<c.ch.lines.length)showLine(c.lineIdx+1);
+else startReturn();
+}
+function startReturn(){
+var c=cine;if(!c)return;
+cineBar.style.display='none';cineChoices.innerHTML='';
+c.phase='return';c.t=0;
+}
+function finishCine(){
+var ch=cine.ch;
+cine=null;
+document.body.classList.remove('cineMode');
+if(ch.doneFn)ch.doneFn();
+storyState.done.push(ch.id);
+creditWallet(120);pulseMoneyWidget();
+pushToast('STORY BONUS +$120','style');
+saveStory();
+}
+function tickCine(dt){
+var c=cine;if(!c)return;
+c.t+=dt;c.charT+=dt;
+if(c.phase==='in'){
+var p=Math.min(1,c.t/c.inDur);
+var e=1-Math.pow(1-p,2);
+c.carX=c.spawn.x+(c.stop.x-c.spawn.x)*e;
+c.carY=c.spawn.y+(c.stop.y-c.spawn.y)*e;
+var baseA=Math.atan2(c.stop.y-c.spawn.y,c.stop.x-c.spawn.x);
+var side=Math.sin(p*Math.PI)*(c.drift?0.55:0.12);
+c.carA=baseA+side*(c.flip?-1:1);
+if(c.drift&&Math.random()<0.85){
+tireSmoke.push({x:c.carX-Math.cos(baseA)*14,y:c.carY-Math.sin(baseA)*14,r:rollBetween(2,4),alpha:0.5,vx:rollBetween(-20,20),vy:rollBetween(-20,20)});
+}
+if(p>=1){c.phase='parked';c.t=0;
+var bi=0;while(bi<10){tireSmoke.push({x:c.carX+rollBetween(-10,10),y:c.carY+rollBetween(-10,10),r:rollBetween(2,5),alpha:0.5,vx:rollBetween(-30,30),vy:rollBetween(-30,30)});bi++;}
+thumpBass(0.05);}
+}else if(c.phase==='parked'){
+if(c.t>0.6){c.phase='walk';c.t=0;c.charOn=true;c.charSX=c.carX;c.charSY=c.carY+14;c.charX=c.charSX;c.charY=c.charSY;c.charMode='walk';playClickSound();}
+}else if(c.phase==='walk'){
+var pw=Math.min(1,c.t/1.15);
+c.charX=c.charSX+(c.talk.x-c.charSX)*pw;
+c.charY=c.charSY+(c.talk.y-c.charSY)*pw;
+if(pw>=1){c.phase='talk';c.t=0;c.charMode='talk';showLine(0);}
+}else if(c.phase==='talk'){
+typeTimerCine(dt);
+if((c.ch.id==='ch12'||c.ch.id==='ch13')&&Math.random()<dt*5){
+burstSparks(playerCar.x+rollBetween(-60,60),playerCar.y+rollBetween(-60,60),6);
+}
+}else if(c.phase==='return'){
+var pr=Math.min(1,c.t/1.0);
+c.charX=c.talk.x+(c.charSX-c.talk.x)*pr;
+c.charY=c.talk.y+(c.charSY-c.talk.y)*pr;
+c.charMode='walk';
+if(pr>=1){c.phase='enter';c.t=0;c.charOn=false;}
+}else if(c.phase==='enter'){
+if(c.t>0.35){c.phase='out';c.t=0;c.outA=Math.atan2(c.stop.y-playerCar.y,c.stop.x-playerCar.x);}
+}else if(c.phase==='out'){
+var po=Math.min(1,c.t/1.3);
+var e2=po*po;
+c.carX=c.stop.x+Math.cos(c.outA)*e2*520;
+c.carY=c.stop.y+Math.sin(c.outA)*e2*520;
+c.carA=c.outA+Math.sin(po*Math.PI*2)*(c.drift?0.3:0.08);
+if(Math.random()<0.6)tireSmoke.push({x:c.carX-Math.cos(c.outA)*14,y:c.carY-Math.sin(c.outA)*14,r:rollBetween(2,4),alpha:0.45,vx:rollBetween(-25,25),vy:rollBetween(-25,25)});
+if(po>=1)finishCine();
+}
+}
+/* ── render cinematic actors into world ── */
+var _pw=paintWorld;
+paintWorld=function(){
+_pw();
+if(!cine)return;
+mainCtx.save();
+mainCtx.translate(worldToScreenX(cine.carX),worldToScreenY(cine.carY));
+mainCtx.rotate(cine.carA+Math.PI/2);
+if(cine.key==='ghost')mainCtx.globalAlpha=0.7+0.2*Math.sin(cine.t*3);
+paintVehicleSprite(mainCtx,CHAR_CARS[cine.key],0);
+mainCtx.restore();
+if(cine.charOn){
+var sx=worldToScreenX(cine.charX),sy=worldToScreenY(cine.charY);
+mainCtx.save();mainCtx.translate(sx,sy);
+paintHuman(mainCtx,cine.key,cine.charT,cine.charMode);
+mainCtx.restore();
+if(cine.phase==='talk'){
+var who=CHARS[cine.key];
+mainCtx.font='6px "Press Start 2P",monospace';
+mainCtx.textAlign='center';
+mainCtx.fillStyle='rgba(0,0,0,0.75)';
+mainCtx.fillText(who.name,sx+1,sy-29);
+mainCtx.fillStyle=who.col;
+mainCtx.fillText(who.name,sx,sy-30);
+mainCtx.fillStyle='rgba(255,255,255,0.92)';
+mainCtx.fillRect(sx+12,sy-48,30,14);
+mainCtx.beginPath();mainCtx.moveTo(sx+14,sy-34);mainCtx.lineTo(sx+20,sy-34);mainCtx.lineTo(sx+12,sy-26);mainCtx.closePath();mainCtx.fill();
+mainCtx.fillStyle='#222';
+var dotN=1+Math.floor(cine.t*4)%3,dd=0;
+while(dd<dotN){mainCtx.beginPath();mainCtx.arc(sx+19+dd*8,sy-41,2,0,FULL_CIRCLE);mainCtx.fill();dd++;}
+}
+}
+};
+/* ── input ── */
+window.addEventListener('keydown',function(e){
+if(!cine)return;
+if(e.code==='Escape'){
+e.preventDefault();e.stopPropagation();
+cineBar.style.display='none';cineChoices.innerHTML='';
+if(!cine.charOn&&cine.phase!=='out'){cine.phase='out';cine.t=0;cine.outA=Math.atan2(cine.stop.y-playerCar.y,cine.stop.x-playerCar.x);}
+else{cine.phase='return';cine.t=0;}
+return;
+}
+if(cine.phase==='talk'&&(e.code==='Enter'||e.code==='Space'||e.code==='KeyE')){e.preventDefault();e.stopPropagation();advanceCine();}
+},true);
+cineBar.addEventListener('click',advanceCine);
+/* freeze world during cutscene */
+var _rc=readControls;
+readControls=function(){if(cine)return{up:false,down:false,left:false,right:false,handbrake:false,nitro:false};return _rc();};
+function guard(fn){return function(dt){if(cine)return;fn(dt);};}
+tickTrafficFlow=guard(tickTrafficFlow);
+tickPursuit=guard(tickPursuit);
+tickHazards=guard(tickHazards);
+tickPickups=guard(tickPickups);
+tickRace=guard(tickRace);
+decayWantedHeat=guard(decayWantedHeat);
+tickStyleChain=guard(tickStyleChain);
+scanInteractionZones=guard(scanInteractionZones);
+var _ea=executeArrest;
+executeArrest=function(){storyState.flags.busted=1;saveStory();_ea();};
+var _er=endRace;
+endRace=function(won){
+if(won){storyState.racesWon++;
+if(storyState.flags.bet){storyState.flags.bet=false;creditWallet(300);pulseMoneyWidget();pushToast('BET WON! +$300','good');}
+if(storyState.flags.finalRace&&!storyState.flags.finalRaceWon){storyState.flags.finalRaceWon=true;}
+saveStory();}
+_er(won);};
+var _rpi=refreshPauseInfo;
+refreshPauseInfo=function(){_rpi();var e=document.getElementById('pauseBadges');if(e)e.textContent+='   ·   STORY '+storyState.done.length+'/'+14+(storyState.done.length>=14?' — SAGA COMPLETE':'');};
+/* ── THE LAST SLICE SAGA · 14 chapters ── */
+var STORY=[
+{id:'ch0',name:'SHIFT BRIEFING',hint:'start the shift',cast:'pete',check:function(){return gameRunning&&(performance.now()-cineIgnAt)>2200;},doneFn:null,lines:[
+{who:'narr',txt:'pixel city. 8am. the pizza is hot. the rent is somehow hotter.'},
+{who:'pete',txt:"yo. you the new guy? sick. welcome to pixel pete's, voted best pizza in town by me, the voter."},
+{who:'pete',txt:'how it works: food in box, box in car, car goes brrr, money comes here. crash the pizza and i cry. crash the car and i laugh.'},
+{who:'pete',txt:'fair warning though — some dude at the raceway will NOT shut up about drifting. kenji something. drives a panda car. like literally painted like a panda.'},
+{who:'pete',txt:'anyway. why do you want this job. be honest.',choices:[
+{t:'i need money. i am, in fact, broke.',fn:function(){creditWallet(100);pulseMoneyWidget();pushToast('pete slides you $100. "relatable. spend it on nitro"','good');}},
+{t:'i feel like i was born to deliver pizza',fn:function(){grantExp(40);pushToast('pete: "beautiful. or concerning. either way hired"','good');}}]},
+{who:'pete',txt:'good answer. wrong, but good. gps is blue, money is green, cops are a you problem. NOW SEND IT'}]},
+{id:'ch1',name:'THE FIRST SLICE',hint:'complete 1 delivery',cast:'pete',check:function(){return careerStats.deliveries>=1;},doneFn:null,lines:[
+{who:'narr',txt:'one delivery done. pizza arrived warm. the customer whispered "finally" like we saved his whole life.'},
+{who:'pete',txt:'YOOO first drop clean!! look at you go. basically a professional now.'},
+{who:'pete',txt:'real talk — metro city pays stupid money but the highway gate only opens when you own every car in town. city hall is corrupt, whole thing.'},
+{who:'pete',txt:'also the panda guy was asking about you. said your drifting is "embarrassing". rude. your drifting is mid at best but still. the PRINCIPLE.',choices:[
+{t:'who does this guy think he is??',fn:function(){grantExp(25);pushToast('pete: "THAT\'s the energy. he drifts so hard his groceries file complaints"','info');}},
+{t:'never heard of him',fn:function(){creditWallet(60);pulseMoneyWidget();pushToast('pete: "ice cold. he\'s gonna hate you so much. +$60 for style"','info');}}]},
+{who:'pete',txt:'anyway. more orders, more money. go go go'}]},
+{id:'ch2',name:'TANAKA',hint:'complete 5 deliveries',cast:'kenji',drift:true,check:function(){return careerStats.deliveries>=5;},
+doneFn:function(){pushToast('PRESS E at the checkered pad to race Kenji!','info');},lines:[
+{who:'narr',txt:'a panda-colored car slides up sideways, tires smoking. the window rolls down. way too dramatic for a tuesday.'},
+{who:'kenji',txt:'...you. the pizza one. i have watched you drive. it was... something.'},
+{who:'kenji',txt:'i am kenji tanaka. the raceway is my kitchen. i am the head chef. my tofu is very fast.'},
+{who:'kenji',txt:'there\'s a checkered pad west of town. i will be there. unless you are scared. are you scared.',choices:[
+{t:"you're on. i'll beat you.",fn:function(){storyState.flags.bet=true;saveStory();pushToast('a $300 bet is on. kenji smirks. his tofu smirks too.','style');}},
+{t:'deliveries first. racing later.',fn:function(){creditWallet(120);pulseMoneyWidget();pushToast('kenji: "the pizza is sacred. i respect this. here, $120"','good');}}]},
+{who:'narr',txt:'he peels out in a perfect donut. your tires feel judged. honestly so do you.'}]},
+{id:'ch3',name:'THE HEAT',hint:'get heat or escape once',cast:'bricks',check:function(){return careerStats.escapes>=1||storyState.flags.busted;},doneFn:null,lines:[
+{who:'narr',txt:'a police cruiser pulls up beside you. lights off. which is somehow worse.'},
+{who:'bricks',txt:'officer bricks, metro pd. hold your horses, pizza man.'},
+{who:'bricks',txt:'we\'ve had reports of a "fast pizza" doing donuts, terrorizing cones, drifting through crosswalks like they owe it money.'},
+{who:'bricks',txt:'between you and me? impressive driving. but the commissioner wants paperwork and i hate paperwork. i hate it with my whole heart.',choices:[
+{t:"sorry officer, won't happen again",fn:function(){creditWallet(60);pulseMoneyWidget();pushToast('bricks: "good answer. go do it again somewhere i can\'t see"','info');}},
+{t:'catch me if you can!',fn:function(){creditWallet(180);pulseMoneyWidget();pushToast('bricks is smiling. why is he smiling. what is happening','warn');}}]},
+{who:'bricks',txt:'one more thing. some dude in a gold limo keeps buying up pizza shops. calls himself "the duke". watch your back, pizza man.'}]},
+{id:'ch4',name:"GRANNY'S ROCKET",hint:'reach level 3',cast:'granny',drift:true,check:function(){return courierLevel>=3;},doneFn:null,lines:[
+{who:'narr',txt:'an old lady rockets up behind you at an illegal speed. she waves. her car has more nitro tanks than seats.'},
+{who:'granny',txt:'hello sweetie! you\'re the fast one, right? i\'m granny. this is my rocket. her name is doris.'},
+{who:'granny',txt:'they used to call me "grandma\'s rocket". i still have the hard candies. AND the nitro. mostly the nitro.'},
+{who:'granny',txt:'my cake orders need a gentle foot, sweetie. fragile cargo. crashing is for amateurs and ducks.',choices:[
+{t:"i'll drive like it's my own grandma's cake",fn:function(){creditWallet(150);pulseMoneyWidget();pushToast('granny hands you a charm. it smells like cinnamon and violence.','good');}},
+{t:'speed is my middle name',fn:function(){grantExp(60);pushToast('granny: "i will pray for the cake. and for the cake\'s family."','warn');}}]},
+{who:'granny',txt:'take this charm, sweetie. it won\'t stop you crashing, but it makes crashes 25% more emotional. drive safe!'}]},
+{id:'ch5',name:'THE DUKE',hint:'hold $5,000',cast:'duke',check:function(){return playerProfile.money>=5000;},doneFn:null,lines:[
+{who:'narr',txt:'a gold limo glides up silently. a man steps out. monocle, cane, smells like expensive oregano. he is so much.'},
+{who:'duke',txt:'ah. the famous courier. i am the duke. i own everything in this city worth owning.'},
+{who:'duke',txt:'soon i will own every pizza shop. starting with that pixel pete\'s shed. my offer: $5,000. walk away. buy a boat.'},
+{who:'duke',txt:'everyone has a price, courier. what\'s yours?',choices:[
+{t:'the shop is not for sale.',fn:function(){storyState.flags.defiant=true;saveStory();pushToast('the duke sneers. it is a very practiced sneer. he has been training.','style');}},
+{t:'...show me the money',fn:function(){creditWallet(300);pulseMoneyWidget();pushToast('duke: "excellent! pleasure doing busi— wait. market crashed. never mind."','warn');}}]},
+{who:'duke',txt:'this isn\'t over. the duke ALWAYS gets the last slice.'},
+{who:'narr',txt:'he leaves in a cloud of gold exhaust. the exhaust is also expensive.'}]},
+{id:'ch6',name:'METRO DREAMS',hint:'unlock the highway',cast:'roxy',drift:true,check:function(){return playerProfile.highwayUnlocked;},doneFn:null,lines:[
+{who:'narr',txt:'a neon-streaked car drifts up in a perfect arc. the driver leans out the window mid-slide.'},
+{who:'roxy',txt:'not so fast, pizza boy. metro is MY turf. i\'m roxy. fastest courier east of the merge lane. possibly west too. i haven\'t checked.'},
+{who:'roxy',txt:'pete won\'t shut up about you. 40 deliveries in one night, he says. i did 42. and i don\'t brake.'},
+{who:'roxy',txt:'your friend here seems fine-ish. if they can keep up, maybe we run together sometime.',choices:[
+{t:'keep up? try keeping up with ME.',fn:function(){creditWallet(250);pulseMoneyWidget();pushToast('roxy: "cute. neon slice. midnight. don\'t be late, i leave at midnight"','style');}},
+{t:"let's just deliver pizza, together",fn:function(){grantExp(80);pushToast('roxy: "...you\'re alright, pizza kid. weird, but alright."','good');}}]},
+{who:'narr',txt:'she peels out. somewhere, a synthwave song starts playing. nobody knows where from. it never stops.'}]},
+{id:'ch7',name:'MAMA SLICE',hint:'complete 12 deliveries',cast:'mama',check:function(){return careerStats.deliveries>=12;},doneFn:null,lines:[
+{who:'narr',txt:'back at the shop, a large woman in a flour-covered apron is kneading dough with terrifying intensity. the dough looks scared.'},
+{who:'mama',txt:'so THIS is the courier. pete says you drive like a maniac. i say you drive like a maniac with potential. that\'s a compliment. take it.'},
+{who:'mama',txt:'here\'s the thing. the duke? he was my sous-chef. twenty years ago. he wanted to put PINEAPPLE on the pizza.'},
+{who:'mama',txt:'i fired him. now he\'s buying every shop in town out of spite. this is personal. this is so personal.',choices:[
+{t:'pineapple?! this is war.',fn:function(){storyState.flags.war=true;saveStory();grantExp(50);pushToast('mama: "THAT\'s my courier. war it is. i\'ll make sandwiches for the troops"','style');}},
+{t:"i'm just here for the money",fn:function(){creditWallet(150);pulseMoneyWidget();pushToast('mama: "honest. also wrong. take $150 and think about what you\'ve done"','good');}}]},
+{who:'mama',txt:'good. take my lucky rolling pin. it won\'t help you drive, but the dough tastes like victory now. that\'s science.'}]},
+{id:'ch8',name:'THE NIGHT GHOST',hint:'deliver at night',cast:'ghost',drift:true,check:function(){return storyState.flags.nightSeen;},doneFn:null,lines:[
+{who:'narr',txt:'2am. streets empty. your mirrors show a car with no color. not black. just... nothing. your radio plays static that sounds like it\'s trying to say hi.'},
+{who:'ghost',txt:'...courier...'},
+{who:'ghost',txt:'...they called me the fastest... once... now i am only the quiet... and the slightly damp...'},
+{who:'ghost',txt:'...race me... when the moon is out... winner takes the phantom... loser takes nothing, which i am very used to...',choices:[
+{t:"you're on, casper.",fn:function(){storyState.flags.ghostRace=true;saveStory();pushToast('the ghost vanishes. your engine is running. you don\'t remember starting it. spooky.','style');}},
+{t:"i don't race ghosts",fn:function(){pushToast('the ghost sighs. it sounds like wind through a sad hallway.','warn');}}]},
+{who:'narr',txt:'win a race to settle this. the ghost is watching. probably. it\'s hard to tell.'}]},
+{id:'ch9',name:"ROXY'S RUN",hint:'complete 18 deliveries',cast:'roxy',check:function(){return careerStats.deliveries>=18;},doneFn:null,lines:[
+{who:'narr',txt:'roxy pulls up to your window and slides a manifest across. it has so many orders on it. so many.'},
+{who:'roxy',txt:'big night, pizza kid. twelve orders, two cities, one of you. metro pd doubled patrols because of some duke guy\'s goons.'},
+{who:'roxy',txt:'i need someone i trust on the east side. that\'s you. unless you\'re all drift, no delivery. are you. be honest.',choices:[
+{t:"in. let's paint the town.",fn:function(){creditWallet(200);pulseMoneyWidget();storyState.flags.roxyAlly=true;saveStory();pushToast('roxy: "THAT\'s what i like to hear. let\'s absolutely ruin some speed limits"','style');}},
+{t:'only if we split the tips',fn:function(){creditWallet(150);pulseMoneyWidget();pushToast('roxy laughs. "deal, you greedy little gremlin. respect."','good');}}]},
+{who:'roxy',txt:'one more thing. if you see a car with no color at night... don\'t follow it. some races you don\'t come back from. some races you do but the snacks are gone.'}]},
+{id:'ch10',name:"DUKE'S REVENGE",hint:'hold $12,000',cast:'duke',check:function(){return playerProfile.money>=12000;},doneFn:null,lines:[
+{who:'narr',txt:'the duke returns. this time with two lawyers and a bulldozer with a ribbon on it. the ribbon is gold. of course it is.'},
+{who:'duke',txt:'last chance, courier. i will buy pixel pete\'s AND your loyalty. name your price. i have so much money it\'s honestly a little silly.'},
+{who:'duke',txt:'also, mama slice\'s "sacred recipe" is a myth. i have data. spreadsheets. the market wants pineapple. the market is wrong but loud.'},
+{who:'duke',txt:'the offer expires at sundown. literally. i scheduled it. choose.',choices:[
+{t:"pixel pete's stands FOREVER.",fn:function(){storyState.flags.finalDefiance=true;saveStory();grantExp(100);pushToast('the duke\'s monocle cracks. dramatically. he has spares. he replaces it and keeps monologuing.','style');}},
+{t:'how much are we talking?',fn:function(){creditWallet(500);pulseMoneyWidget();pushToast('duke: "HA! see? everyone has a—" PETE: "NO. NO. WE ARE NOT SELLING. DUKE, LEAVE."','warn');}}]},
+{who:'narr',txt:'mama appears. she cracks her knuckles. it sounds like bread being torn by a god. the duke\'s lawyers take a step back.'}]},
+{id:'ch11',name:'THE LAST SLICE',hint:'win 2 races + 25 deliveries',cast:'kenji',drift:true,check:function(){return storyState.racesWon>=2&&careerStats.deliveries>=25;},
+doneFn:function(){storyState.flags.finalRace=true;saveStory();showAnnouncement('FINAL RACE','Beat Kenji at the checkered pad!','#ff5252');},lines:[
+{who:'narr',txt:'sunset. kenji drifts up one last time, smoke trailing. the duke watches from a gold helicopter. this is fine.'},
+{who:'kenji',txt:'you beat me before. luck. the mountain does not lie. also i was distracted by a really good tofu commercial.'},
+{who:'kenji',txt:'one final race. everything on it. winner takes the title: FASTEST COURIER IN PIXEL CITY. loser buys tofu.'},
+{who:'kenji',txt:'and... i owe you an apology. your drifting is not embarrassing. it is... fine. don\'t tell anyone i said that or i will deny it forever.',choices:[
+{t:'full send. no brakes.',fn:function(){pushToast('kenji: "THAT is what i wanted to hear. see you at the flag"','style');}},
+{t:'may the best courier win',fn:function(){pushToast('kenji: "it\'s me. it\'s obviously me. but sure. sportsmanship. whatever."','info');}}]},
+{who:'narr',txt:'go win the race at the checkered pad. the flag is ready. the legend is ready. the duke\'s helicopter is somehow also ready.'}]},
+{id:'ch12',name:'PIZZA LEGEND',hint:'win the final race',cast:'kenji',check:function(){return !!storyState.flags.finalRaceWon;},doneFn:null,lines:[
+{who:'narr',txt:'the checkered flag falls. kenji\'s car slides to a stop. he gets out. and for the first time... he smiles. it\'s nice, actually.'},
+{who:'kenji',txt:'...you won. fair and square. take the title. and take this — i don\'t need two trophies. or do i. no. take it.'},
+{who:'duke',txt:'NO! this cannot be! i had spreadsheets! i had a MONOCLE! i had a bulldozer with a RIBBON!'},
+{who:'mama',txt:'you had pineapple, duke. you never stood a chance. go home. make a salad.'},
+{who:'narr',txt:'the duke\'s helicopter flies away, slowly, sadly. he\'ll be back. he\'s definitely not. probably. anyway — you\'re a legend now.'}]},
+{id:'ch13',name:'CREDITS ROLL',hint:'reach level 5',cast:'kenji',check:function(){return courierLevel>=5;},
+doneFn:function(){
+var SLICE_ID=27;
+var found=false;var i=0;
+while(i<VEHICLE_CATALOG.length){if(VEHICLE_CATALOG[i].id===SLICE_ID){found=true;break;}i++;}
+if(!found)VEHICLE_CATALOG.push({id:SLICE_ID,name:'SLICE RAY 3000',price:99999,mult:12,maxSpeed:560,accel:340,grip:11,turnRate:3.9,L:30,W:14,body:'#ffd23f',body2:'#c1382c',stripe:'#fff',city:2,desc:'Forged from the Last Slice by Kenji himself. It does not deliver pizza. It IS pizza.'});
+if(playerProfile.owned.indexOf(SLICE_ID)===-1){playerProfile.owned.push(SLICE_ID);persistProfile();}
+unlockBadge('storyhero');
+showAnnouncement('THE LAST SLICE SAGA — COMPLETE','SLICE RAY 3000 added to your garage. The drift continues forever.','#ffd23f');
+playDeliverJingle();
+},lines:[
+{who:'pete',txt:'you did it, courier. from rustbucket to legend. mama\'s crying. i\'m crying. the pizza is crying. everyone is crying. happy crying.'},
+{who:'granny',txt:'SO proud of you, sweetie!! hard candies for EVERYONE!! doris is doing a burnout in the parking lot!!'},
+{who:'bricks',txt:'i didn\'t see anything. (he salutes. then writes himself a parking ticket. procedure is procedure.)'},
+{who:'roxy',txt:'not bad, pizza kid. next week we run the coast. bring nitro. and snacks. mostly snacks.'},
+{who:'kenji',txt:'the roads will remember you, courier. now go. the pizza... it never stops. it is, in fact, eternal.'},
+{who:'ghost',txt:'...well driven... the night respects you now... also i found this in my glovebox... take it...'},
+{who:'mama',txt:'you\'re family now, courier. family eats free. (that\'s a lie. pay full price. i am watching. i always watch.)'},
+{who:'narr',txt:'THE END — but the shift never ends. drive safe. drift hard. tip your courier. (you are the courier. tip yourself.)'}]}];
+BADGE_LIST.push({id:'storyhero',name:'MAIN CHARACTER',desc:'Finish the Last Slice Saga'});
+/* ── polling & side features ── */
+var cineIgnAt=0,cineSeenRun=false,chapterPollTimer=0.8,nightSeenFlagged=false;
+function sceneSafe(){
+return gameRunning&&!isPaused&&!garageShowing&&!shopShowing&&!raceActive&&!cine&&patrolUnits.length===0&&wantedStars===0&&playerCar.air<=0;
+}
+function pollChapters(){
+if(gameRunning&&!cineSeenRun){cineSeenRun=true;cineIgnAt=performance.now();}
+if(!nightSeenFlagged&&gameRunning&&nightLevel>0.5){nightSeenFlagged=true;storyState.flags.nightSeen=true;saveStory();}
+if(!sceneSafe())return;
+var i=0;
+while(i<STORY.length){var ch=STORY[i];
+if(storyState.done.indexOf(ch.id)===-1&&ch.check()){startCinematic(ch);return;}i++;}
+}
+function nextChapterHint(){var i=0;while(i<STORY.length){if(storyState.done.indexOf(STORY[i].id)===-1)return STORY[i].hint;i++;}return 'complete — you are the legend';}
+if(storyChipEl)storyChipEl.addEventListener('click',function(){
+pushToast('NEXT STORY: '+nextChapterHint()+' · '+storyState.done.length+'/14 done','info');
+playClickSound();});
+/* photo mode */
+window.addEventListener('keydown',function(e){
+if(e.code!=='KeyC'||cine||!gameRunning||isPaused||garageShowing||shopShowing)return;
+photoFlashEl.style.transition='none';photoFlashEl.style.opacity='0.9';
+setTimeout(function(){photoFlashEl.style.transition='opacity .45s';photoFlashEl.style.opacity='0';},40);
+storyState.snaps++;saveStory();
+creditWallet(5);popFloatText('SNAP! +$5','#ffffff');
+playTone(2200,0.03,'square',0.05);
+},true);
+/* radio news */
+var NEWS=["Traffic report: one (1) pizza, moving at ridiculous speed.","Local cat arrives home before its owner. Experts baffled.","The Duke denies hoarding all the parmesan.","Metro PD denies helicopter budget increase. The helicopter disagrees.","Weather: 40% chance of rain. 100% chance of someone drifting in it.","Kenji Tanaka seen buying tofu. Fifteen crates. Nobody asked.","Granny sets land-speed record. Again. Doris is fine.","Roxy delivers 42 pizzas in one night. Claims she 'forgot to brake'.","Scientists confirm donuts are valid currency in three neighborhoods.","Mama Slice's rolling pin declared a heritage artifact.","Rumor: a colorless car races at night. Rumor is nervous.","The pizza is hot. The rent is hotter. Stay hydrated, courier.","Rumor: golden slices grant wishes. The rumor is correct."];
+setInterval(function(){
+if(radioDial>0&&gameRunning&&!cine&&!isPaused&&!garageShowing&&!shopShowing)
+pushToast('RADIO NEWS: '+grabOne(NEWS),'info');
+},26000);
+/* kenji taunts during races */
+var TAUNTS=['KENJI: The pizza fears me.','KENJI: Your tires sound nervous.','KENJI: Drift harder, courier!','KENJI: My tofu is fresher than your rolls.','KENJI: Is that nitro, or is your muffler crying?','KENJI: The mountain is watching. Impress it.','KENJI: I let you go first. It\'s called honor.'];
+var tauntT=12;
+/* hood cat */
+var catState=null,catRoad=null,catCd=25,purr=0,purrHeartT=0,honkScareT=0;
+function catLogic(dt){
+catCd-=dt;honkScareT=Math.max(0,honkScareT-dt);
+if(catState==='road'&&catRoad){
+var d=spanBetween(playerCar.x,playerCar.y,catRoad.x,catRoad.y);
+if(d>620){catState=null;catRoad=null;catCd=30;return;}
+if(honkScareT>0&&d<120){catState=null;catRoad=null;catCd=45;pushToast('The cat is UNIMPRESSED by your horn','warn');return;}
+if(d<28&&playerCar.speed<35){catState='hood';purr=0;catRoad=null;
+showAnnouncement('CAT ONBOARD!','Drive smooth — no drifting, no crashing!','#ff9fd0');
+playTone(880,0.08,'triangle',0.05);playTone(1174,0.12,'triangle',0.05,0.09);}
+}else if(catState==='hood'){
+if(playerCar.isDrifting||driftAccum>3||cameraShake>3.5){
+catState=null;catCd=55;purr=0;
+pushToast('The cat leaves a 1-star review. HISS.','warn');
+styleBank=Math.max(0,styleBank-40);cameraShake=Math.max(cameraShake,2);
+sweepTone(900,200,0.25,'sawtooth',0.06);return;}
+if(playerCar.speed>25&&playerCar.speed<200)purr+=dt;
+purrHeartT-=dt;if(purrHeartT<=0){purrHeartT=1.6;popFloatText('♥','#ff9fd0');thumpBass(0.02);}
+if(purr>=18){catState=null;catCd=80;purr=0;
+storyState.catRides++;saveStory();
+creditWallet(150);grantExp(15);nitroTank=nitroMax();pulseMoneyWidget();
+showAnnouncement('CAT DELIVERED!','+$150 · the purr is eternal','#ff9fd0');
+playDeliverJingle();
+if(storyState.catRides>=3){
+var KITTEN_ID=26;var kf=false;var ki=0;
+while(ki<VEHICLE_CATALOG.length){if(VEHICLE_CATALOG[ki].id===KITTEN_ID){kf=true;break;}ki++;}
+if(!kf)VEHICLE_CATALOG.push({id:KITTEN_ID,name:'KITT-EN',price:7777,mult:3.4,maxSpeed:405,accel:285,grip:9.6,turnRate:3.8,L:27,W:13,body:'#2e2e34',body2:'#111',stripe:'#ffd23f',city:1,desc:'Runs on premium tuna and purrs at 4000 RPM. Three cats approved this vehicle.'});
+showAnnouncement('KITT-EN UNLOCKED','The cats have chosen you. See it at the garage!','#ffd23f');
+persistProfile();playRankJingle();}
+}
+}else if(catCd<=0&&!raceActive&&!cine){
+var spot=grabRoadwaySpot(180,420);
+if(spot){catRoad={x:spot.x,y:spot.y};catState='road';catCd=9999;}
+}
+}
+function drawCatSitting(sx,sy){
+mainCtx.save();mainCtx.translate(sx,sy);
+mainCtx.fillStyle='rgba(0,0,0,0.3)';mainCtx.beginPath();mainCtx.ellipse(0,3,6,3,0,0,FULL_CIRCLE);mainCtx.fill();
+mainCtx.fillStyle='#2e2e34';
+mainCtx.beginPath();mainCtx.ellipse(0,0,5,6,0,0,FULL_CIRCLE);mainCtx.fill();
+mainCtx.beginPath();mainCtx.arc(0,-6,4,0,FULL_CIRCLE);mainCtx.fill();
+mainCtx.beginPath();mainCtx.moveTo(-4,-8);mainCtx.lineTo(-2,-12);mainCtx.lineTo(-1,-8);mainCtx.closePath();mainCtx.fill();
+mainCtx.beginPath();mainCtx.moveTo(4,-8);mainCtx.lineTo(2,-12);mainCtx.lineTo(1,-8);mainCtx.closePath();mainCtx.fill();
+mainCtx.fillStyle='#ffd23f';mainCtx.fillRect(-2,-7,1.5,1.5);mainCtx.fillRect(1,-7,1.5,1.5);
+mainCtx.restore();
+}
+function drawCatTop(fx,fy,ang){
+mainCtx.save();mainCtx.translate(worldToScreenX(fx),worldToScreenY(fy));mainCtx.rotate(ang+Math.PI/2);
+mainCtx.fillStyle='#2e2e34';
+mainCtx.beginPath();mainCtx.ellipse(0,0,3.4,4.6,0,0,FULL_CIRCLE);mainCtx.fill();
+mainCtx.beginPath();mainCtx.arc(0,-4.4,2.6,0,FULL_CIRCLE);mainCtx.fill();
+mainCtx.restore();
+}
+/* UFO */
+var ufo=null,ufoCd=60;
+function ufoLogic(dt){
+ufoCd-=dt;
+if(!ufo){
+if(nightLevel>0.5&&playerCar.speed>410&&ufoCd<=0&&Math.random()<dt*0.25){
+ufo={t:0,drops:0};sweepTone(150,600,1.2,'sine',0.05);
+pushToast('...something is watching you from up there','warn');}
+return;}
+ufo.t+=dt;
+if(ufo.drops<3&&ufo.t>1.2+ufo.drops*1.6){ufo.drops++;
+roadPickups.push({x:playerCar.x+rollBetween(-60,60),y:playerCar.y+rollBetween(-60,60),type:'coin',t:0,life:22});
+playTone(1400,0.05,'triangle',0.04);}
+if(ufo.t>=6.5){
+photoFlashEl.style.transition='none';photoFlashEl.style.opacity='1';
+setTimeout(function(){photoFlashEl.style.transition='opacity .9s';photoFlashEl.style.opacity='0';},80);
+var spot=randomRoadPointAbs();
+if(spot){playerCar.x=spot.x;playerCar.y=spot.y;playerCar.vx=0;playerCar.vy=0;playerCar.speed=0;camera.x=spot.x;camera.y=spot.y;gpsRouteTimer=0;}
+creditWallet(77);pulseMoneyWidget();
+showAnnouncement('ABDUCTED!?','The aliens wanted pizza. They tipped +$77.','#4ad1ff');
+sweepTone(1200,120,1,'sine',0.07);ufo=null;ufoCd=240;saveStory();
+}
+}
+function drawUfo(){
+var hx=worldToScreenX(playerCar.x),hy=worldToScreenY(playerCar.y)-70+Math.sin(ufo.t*3)*6;
+mainCtx.fillStyle='#8a8d98';mainCtx.beginPath();mainCtx.ellipse(hx,hy,22,8,0,0,FULL_CIRCLE);mainCtx.fill();
+mainCtx.fillStyle='#b8ff9a';mainCtx.beginPath();mainCtx.arc(hx,hy-5,9,Math.PI,0);mainCtx.fill();
+}
+/* run everything */
+var lastFunT=performance.now();
+function funLoop(t){
+requestAnimationFrame(funLoop);
+var dt=Math.min(0.05,(t-lastFunT)/1000);lastFunT=t;
+if(cine)tickCine(dt);
+if(gameRunning&&!isPaused&&!garageShowing&&!shopShowing){
+catLogic(dt);ufoLogic(dt);
+if(raceActive&&raceData){tauntT-=dt;if(tauntT<=0){tauntT=rollBetween(10,16);pushToast(grabOne(TAUNTS),'style');}}
+chapterPollTimer-=dt;if(chapterPollTimer<=0){chapterPollTimer=0.8;pollChapters();}
+}
+var pending=false,pi=0;
+while(pi<STORY.length){if(storyState.done.indexOf(STORY[pi].id)===-1&&STORY[pi].check()){pending=true;break;}pi++;}
+if(storyChipEl){storyChipEl.textContent='▶ STORY '+storyState.done.length+'/14'+(pending?' · READY!':'');
+storyChipEl.classList.toggle('show',gameRunning&&!cine);
+storyChipEl.style.animation=pending?'chipBlink 1s infinite':'none';}
+}
+requestAnimationFrame(funLoop);
+/* draw cat + ufo on top of world */
+var _pw2=paintWorld;
+paintWorld=function(){
+_pw2();
+if(!cine&&gameRunning){
+if(catState==='road'&&catRoad&&inViewFrame(catRoad.x,catRoad.y,40))drawCatSitting(worldToScreenX(catRoad.x),worldToScreenY(catRoad.y));
+if(catState==='hood'){
+var fx=playerCar.x+Math.cos(playerCar.angle)*playerCar.def.L*0.28;
+var fy=playerCar.y+Math.sin(playerCar.angle)*playerCar.def.L*0.28;
+drawCatTop(fx,fy,playerCar.angle);
+var sx=worldToScreenX(playerCar.x),sy=worldToScreenY(playerCar.y)-26;
+mainCtx.fillStyle='rgba(5,7,13,0.72)';mainCtx.fillRect(sx-22,sy,44,5);
+mainCtx.fillStyle='#ff9fd0';mainCtx.fillRect(sx-21,sy+1,42*pinValue(purr/18,0,1),3);
+}
+if(ufo)drawUfo();
+}
+};
+var chEl=document.getElementById('controlsHint');
+if(chEl)chEl.innerHTML+=' · <span class="pixel-font" style="font-size:8px;">C</span> PHOTO';
+pushToast('THE LAST SLICE SAGA installed — 14 chapters, real cutscenes!','style');
+}catch(err){if(window.console&&console.error)console.error('CinePack init error:',err);}
+})();
 })();
 </script>
 </body>
