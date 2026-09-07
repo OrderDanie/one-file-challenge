@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#08090c">
-<meta name="description" content="PIXEL DRIFT COURIER: FULL SEND — retro top-down pizza delivery drift arcade. Deliver food, get money, dodge the heat.">
-<title>PIXEL DRIFT COURIER: FULL SEND</title>
+<meta name="description" content="Pixel Drift Courier — top-down pizza delivery driving. Run orders across the city, beat the clock, and outrun the police.">
+<title>PIXEL DRIFT COURIER</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 1L15 14H1' fill='%23ffb833'/><circle cx='8' cy='9' r='1.6' fill='%23c1382c'/><circle cx='6' cy='12' r='1.3' fill='%23c1382c'/><circle cx='10.5' cy='12' r='1.3' fill='%23c1382c'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,12 +47,12 @@ filter:drop-shadow(3px 3px 0 rgba(0,0,0,0.75));border-radius:0;position:relative
 #clockIcon{width:15px;height:15px;border-radius:2px;background:#ffd23f;border:2px solid var(--bezel-dark);box-shadow:2px 2px 0 rgba(0,0,0,.6),0 0 9px rgba(255,210,63,0.85);transition:background 1.2s,box-shadow 1.2s;flex:none;}
 #clockIcon.night{background:#cfdcf2;box-shadow:2px 2px 0 rgba(0,0,0,.6),inset -4px -3px 0 0 #7e97bd,0 0 9px rgba(200,216,240,0.5);}
 #clockTime{font-family:'Press Start 2P',monospace;font-size:12px;color:#ffe9a8;text-shadow:0 0 8px rgba(255,217,138,.5),2px 2px 0 #000;letter-spacing:1px;line-height:1;}
-#clockDay{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--cyan);letter-spacing:1px;text-shadow:1px 1px 0 #000;}
-#weatherChip{display:none;font-family:'Press Start 2P',monospace;font-size:7px;color:#06222e;background:var(--cyan);padding:4px 6px;border:2px solid var(--bezel-dark);box-shadow:2px 2px 0 rgba(0,0,0,.55);animation:chipBlink 1.6s infinite;}
+#clockDay{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--cyan);letter-spacing:1px;text-shadow:1px 1px 0 #000;}
+#weatherChip{display:none;font-family:'Press Start 2P',monospace;font-size:8px;color:#06222e;background:var(--cyan);padding:4px 6px;border:2px solid var(--bezel-dark);box-shadow:2px 2px 0 rgba(0,0,0,.55);animation:chipBlink 1.6s infinite;}
 #weatherChip.show{display:inline-block;}
 @keyframes chipBlink{50%{opacity:.55;}}
 #rankWidget{position:absolute;top:64px;left:12px;padding:5px 12px;display:flex;align-items:center;gap:8px;}
-#rankName{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--green);letter-spacing:1px;text-shadow:0 0 6px rgba(93,255,138,0.5),1px 1px 0 #000;white-space:nowrap;}
+#rankName{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--green);letter-spacing:1px;text-shadow:0 0 6px rgba(93,255,138,0.5),1px 1px 0 #000;white-space:nowrap;}
 #xpBarWrap{width:74px;height:7px;background:#05070d;border:2px solid var(--bezel-dark);}
 #xpBar{height:100%;width:0%;background:linear-gradient(90deg,#2a7a44,var(--green));box-shadow:0 0 6px rgba(93,255,138,.5);transition:width .3s;}
 #radioWidget{position:absolute;top:102px;left:12px;padding:5px 10px;display:flex;align-items:center;gap:8px;pointer-events:auto;cursor:pointer;}
@@ -69,7 +69,7 @@ filter:drop-shadow(3px 3px 0 rgba(0,0,0,0.75));border-radius:0;position:relative
 .fxC-mag{color:#06222e;background:var(--cyan);}
 .fxC-shd{color:#04220e;background:var(--green);}
 .fxC-trk{color:#2a0418;background:var(--pink);}
-.fxChip{font-family:'Press Start 2P',monospace;font-size:7px;padding:5px 7px;letter-spacing:1px;border:2px solid var(--bezel-dark);box-shadow:2px 2px 0 rgba(0,0,0,.6);animation:chipBlink 1.2s infinite;}
+.fxChip{font-family:'Press Start 2P',monospace;font-size:8px;padding:5px 7px;letter-spacing:1px;border:2px solid var(--bezel-dark);box-shadow:2px 2px 0 rgba(0,0,0,.6);animation:chipBlink 1.2s infinite;}
 #moneyWidget{position:absolute;top:12px;right:12px;padding:8px 14px;display:flex;align-items:center;gap:9px;pointer-events:auto;}
 #moneyWidget .coin{width:20px;height:20px;border-radius:2px;flex:none;background:linear-gradient(135deg,#ffe98a,#ffd23f 45%,#b8862a);border:2px solid #5c4310;box-shadow:inset -3px -3px 0 rgba(0,0,0,.25),2px 2px 0 rgba(0,0,0,.6);}
 #moneyVal{font-family:'Press Start 2P',monospace;font-size:13px;color:var(--amber);text-shadow:0 0 8px rgba(255,184,51,0.55),2px 2px 0 #5c4310;letter-spacing:1px;}
@@ -79,10 +79,10 @@ filter:drop-shadow(3px 3px 0 rgba(0,0,0,0.75));border-radius:0;position:relative
 #carBadge .carName{font-family:'Press Start 2P',monospace;font-size:9px;color:#eee;text-shadow:2px 2px 0 #000;}
 #carBadge .mult{font-size:16px;color:var(--cyan);text-shadow:0 0 6px rgba(74,209,255,0.6),1px 1px 0 #000;}
 #condWrap{width:100%;display:flex;align-items:center;gap:5px;margin-top:2px;}
-#condLabel{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--text-dim);}
+#condLabel{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--text-dim);}
 #condBarWrap{flex:1;height:7px;background:#05070d;border:2px solid var(--bezel-dark);}
 #condBar{height:100%;width:100%;background:var(--green);transition:width .3s,background .3s;}
-#garageBtn{margin-top:5px;font-family:'Press Start 2P',monospace;font-size:7px;color:#111;background:var(--amber);padding:6px 8px;border:2px solid #5c4310;box-shadow:2px 2px 0 #000;cursor:pointer;}
+#garageBtn{margin-top:5px;font-family:'Press Start 2P',monospace;font-size:8px;color:#111;background:var(--amber);padding:6px 8px;border:2px solid #5c4310;box-shadow:2px 2px 0 #000;cursor:pointer;}
 #garageBtn:hover{background:#ffd066;}
 #wantedWidget{position:absolute;top:200px;right:12px;padding:6px 12px;text-align:center;display:none;}
 #wantedWidget.show{display:block;animation:chipBlink 1s infinite;}
@@ -92,7 +92,7 @@ filter:drop-shadow(3px 3px 0 rgba(0,0,0,0.75));border-radius:0;position:relative
 #evadeBar{height:100%;width:0%;background:var(--green);transition:width .2s;}
 #comboWidget{position:absolute;top:106px;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;opacity:0;transition:opacity .25s;}
 #comboWidget.show{opacity:1;}
-#comboLabel{font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:3px;color:var(--cyan);text-shadow:1px 1px 0 #000;}
+#comboLabel{font-family:'Press Start 2P',monospace;font-size:8px;letter-spacing:3px;color:var(--cyan);text-shadow:1px 1px 0 #000;}
 #comboRow{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px 0;}
 #comboMult{font-family:'Press Start 2P',monospace;font-size:17px;color:var(--amber);text-shadow:2px 2px 0 #5c4310,0 0 12px rgba(255,184,51,0.55);display:inline-block;}
 #comboMult.pop{animation:comboPop .28s;}
@@ -391,7 +391,7 @@ body.touch #wantedWidget{right:calc(12px + env(safe-area-inset-right));}
 #steerPad::after{content:'►';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:'Press Start 2P',monospace;font-size:12px;color:rgba(255,184,51,0.55);text-shadow:1px 1px 0 #000;pointer-events:none;}
 #steerKnob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:linear-gradient(180deg,#2e4270,#101528);border:3px solid var(--amber);box-shadow:0 5px 0 rgba(0,0,0,.65),inset 0 2px 0 rgba(255,255,255,.18),0 0 14px rgba(255,184,51,.25);pointer-events:none;}
 #steerKnob::after{content:'';position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#0b0f1d;border:2px solid rgba(255,184,51,.6);}
-.sp-hint{position:absolute;bottom:-22px;left:-10px;right:-10px;text-align:center;font-family:'Press Start 2P',monospace;font-size:6px;letter-spacing:1px;color:var(--text-dim);text-shadow:1px 1px 0 #000;pointer-events:none;}
+.sp-hint{position:absolute;bottom:-22px;left:-10px;right:-10px;text-align:center;font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:1px;color:var(--text-dim);text-shadow:1px 1px 0 #000;pointer-events:none;}
 .sp-hint i{font-style:normal;color:var(--cyan);}
 #pedalCluster{display:flex;flex-direction:column;gap:10px;align-items:flex-end;pointer-events:none;}
 .pd-row{display:flex;gap:10px;align-items:flex-end;pointer-events:none;}
@@ -585,7 +585,7 @@ body.touch #wantedWidget{right:calc(12px + env(safe-area-inset-right));}
 <div class="ss-left">
 <div class="ss-kicker">COURIER DISPATCH TERMINAL · SHIFT #001</div>
 <h1>PIXEL DRIFT<br><span>COURIER</span></h1>
-<p class="ss-tag">deliber food, get <b>MONEEEEEEY</b> cuz u poor and need money, dug <b> but hey rules are rules,</b>ther is police. now with <b>CINEMATIC STORY, MODS, UPGRADES &amp; DRIFT ZONES</b></p>
+<p class="ss-tag">deliver food, get <b>MONEEEEEEY</b> cuz u poor and need money, dug <b> but hey rules are rules,</b>ther is police. now with <b>CINEMATIC STORY, MODS, UPGRADES &amp; DRIFT ZONES</b></p>
 <div class="ss-keys">
 <span class="kbd">W A S D</span> drive &nbsp; <span class="kbd">SPACE</span> handbrake drift<br>
 <span class="kbd">SHIFT</span> nitro &nbsp; <span class="kbd">H</span> horn &nbsp; <span class="kbd">G</span> garage + mods<br>
@@ -599,7 +599,7 @@ body.touch #wantedWidget{right:calc(12px + env(safe-area-inset-right));}
 <div id="goalList"></div>
 </div>
 <div class="ss-panel">
-<h3>curent save</h3>
+<h3>current save</h3>
 <div class="rec-line"><span>DELIVERIES</span><i></i><b id="recDeliveries">0</b></div>
 <div class="rec-line"><span>BEST PAYOUT</span><i></i><b id="recBest">$0</b></div>
 <div class="rec-line"><span>BEST STYLE</span><i></i><b id="recCombo">×0</b></div>
@@ -1159,7 +1159,7 @@ var VEHICLE_CATALOG=[
 {id:3,name:'LOUD NOISES',price:900,mult:1.6,maxSpeed:320,accel:215,grip:6.5,turnRate:2.6,L:30,W:15,body:'#2a3d66',body2:'#1a1a1a',stripe:'#f2e9d8',city:1,desc:'V8 engine, zero brakes. The neighbors filed 14 complaints.'},
 {id:4,name:'Sir Skids-a-Lot',price:1600,mult:1.9,maxSpeed:330,accel:225,grip:5.0,turnRate:3.3,L:27,W:14,body:'#7a7a8a',body2:'#1a1a1a',stripe:'#ffd23f',city:1,desc:'Knighted for distinguished service in the art of going sideways.'},
 {id:5,name:'Corner Gremlin',price:2400,mult:2.2,maxSpeed:335,accel:235,grip:10.5,turnRate:3.5,L:27,W:14,body:'#e8e0c8',body2:'#1a1a1a',stripe:'#c14953',city:1,desc:'Lives in corners. Pays rent in tire marks.'},
-{id:6,name:'Sideways',price:3600,mult:2.6,maxSpeed:360,accel:245,grip:5.2,turnRate:3.0,L:28,W:14,body:'#e0912f',body2:'#1a1a1a',stripe:'#161616',city:1,desc:'Vega Odysse has never once driven straight. Absoulute Legend.'},
+{id:6,name:'Sideways',price:3600,mult:2.6,maxSpeed:360,accel:245,grip:5.2,turnRate:3.0,L:28,W:14,body:'#e0912f',body2:'#1a1a1a',stripe:'#161616',city:1,desc:'Vega Odysse has never once driven straight. Absolute Legend.'},
 {id:7,name:'Yeet Machine',price:5000,mult:3.0,maxSpeed:395,accel:275,grip:3.6,turnRate:3.8,L:28,W:13,body:'#b8ff9a',body2:'#1a1a1a',stripe:'#111',city:1,desc:'Top speed: yes. Grip: lol. Do not sneeze while driving.'},
 {id:8,name:'Disco Disaster',price:6500,mult:3.6,maxSpeed:410,accel:265,grip:8.5,turnRate:3.2,L:29,W:14,body:'#5a3a8a',body2:'#1a1a1a',stripe:'#37f5e0',city:1,desc:'Banned in 3 cities for being too fabulous.'},
 {id:9,name:'Traffic Weasel',price:9000,mult:4.2,maxSpeed:430,accel:260,grip:9.0,turnRate:3.3,L:28,W:14,body:'#4cc9f0',body2:'#1a1a1a',stripe:'#f4f1de',city:2,desc:'Slips through traffic like a weasel with a deadline.'},
